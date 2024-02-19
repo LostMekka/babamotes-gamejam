@@ -25,6 +25,9 @@ function love.update()
     if love.keyboard.isScancodeDown("right","d") then
         player.x = player.x + dt*player_speed
     end
+    if love.keyboard.isScancodeDown("escape") then
+        love.event.quit()
+    end
     scroll_x = player.x - 400
     scroll_y = player.y - 300
 end
