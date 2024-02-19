@@ -14,22 +14,23 @@ function love.update()
     local player = objects[1]
     dt = love.timer.getDelta()
     if love.keyboard.isScancodeDown("up","w") then
-        player.y = player.y - dt*50
+        player.y = player.y - dt*player_speed
     end
     if love.keyboard.isScancodeDown("down","s") then
-        player.y = player.y + dt*50
+        player.y = player.y + dt*player_speed
     end
     if love.keyboard.isScancodeDown("left","a") then
-        player.x = player.x - dt*50
+        player.x = player.x - dt*player_speed
     end
     if love.keyboard.isScancodeDown("right","d") then
-        player.x = player.x + dt*50
+        player.x = player.x + dt*player_speed
     end
     scroll_x = player.x - 400
     scroll_y = player.y - 300
 end
 
 function setup()
+    player_speed = 150
     objects = {}
     scroll_x = 0
     scroll_y = 0
