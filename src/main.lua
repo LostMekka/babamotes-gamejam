@@ -1,4 +1,13 @@
+require "math"
+
 function love.draw()
+    -- bg tiles
+    love.graphics.setColor(1,1,1)
+    for i=math.floor((scroll_x)/128),math.ceil((scroll_x+800)/128) do
+        for j=math.floor((scroll_y)/128),math.ceil((scroll_y+600)/128) do
+            drawimage("sprites/floor-tile.png",i*128-scroll_x,j*128-scroll_y)
+        end
+    end
     -- love.graphics.print(scroll_x, 400-scroll_x, 300-scroll_y)
     for o,obj in pairs(objects) do
         love.graphics.setColor(obj.debugColor)
@@ -49,6 +58,7 @@ function movePlayer()
 end
 
 function setup()
+    images = {}
     playerMovementForce = 1500
     playerMovementDamping = 5
     objects = {}
@@ -94,4 +104,21 @@ function newobj(type,x,y)
     newobj.alive = true
     newobj.debugColor = type == "player" and { 1, 1, 1 } or { 1, 0, 0 }
     table.insert(objects,newobj)
+end
+
+function drawimage(path, x, y, sx_, sy_)
+    local sx = sx_ or 1
+    local sy = sy_ or sx
+    image = loadimage(path)
+    love.graphics.draw(image, x, y, 0, sx, sy)
+end
+
+function loadimage(path)
+    if images[path] == nil then
+        image = love.graphics.newImage(path)
+        images[path] = image
+    else
+        image = images[path]
+    end
+    return image
 end
