@@ -1,6 +1,7 @@
 function love.draw()
     -- love.graphics.print(scroll_x, 400-scroll_x, 300-scroll_y)
     for o,obj in pairs(objects) do
+        love.graphics.setColor(obj.debugColor)
         love.graphics.rectangle("fill",obj.x-scroll_x,obj.y-scroll_y,24,24)
     end
 end
@@ -42,5 +43,6 @@ function newobj(type,x,y)
     newobj.x = x
     newobj.y = y
     newobj.alive = true
+    newobj.debugColor = type == "player" and { 1, 1, 1 } or { 1, 0, 0 }
     table.insert(objects,newobj)
 end
