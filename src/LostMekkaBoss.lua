@@ -7,7 +7,7 @@ function LostMekkaBoss:new(startX, startY)
 
     object.type = "enemy"
     object.alive = true
-    object.debugColor = { 1, 0, 0 }
+    object.debugColor = { 1, 0.5, 0 }
     object.radius = 20
     object.collider = world:newCircleCollider(startX, startY, object.radius)
     object.collider:setCollisionClass("enemy")

@@ -76,6 +76,7 @@ function setup()
     createEnemy(40,0)
     createEnemy(80,0)
     createEnemy(120,0)
+    createEnemy(60,-60,40)
     boss = LostMekkaBoss:new(0, 80)
 end
 
@@ -92,12 +93,16 @@ function createPlayer(x, y)
     return self
 end
 
-function createEnemy(x, y)
+function createEnemy(x, y, r)
     local self = {}
     self.type = "enemy"
     self.alive = true
     self.debugColor = { 1, 0, 0 }
-    self.collider = world:newCircleCollider(x, y, 12)
+    if r == nil then
+        r = 12
+    end
+    self.radius = r
+    self.collider = world:newCircleCollider(x, y, r)
     self.collider:setCollisionClass("enemy")
     self.collider:setLinearDamping(playerMovementDamping)
     self.collider:setObject(self)
