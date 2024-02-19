@@ -1,5 +1,7 @@
 require "math"
 
+local LostMekkaBoss = require("LostMekkaBoss")
+
 function love.draw()
     -- bg tiles
     love.graphics.setColor(1,1,1)
@@ -9,10 +11,11 @@ function love.draw()
         end
     end
     -- love.graphics.print(scroll_x, 400-scroll_x, 300-scroll_y)
-    for o,obj in pairs(objects) do
+    for _, obj in pairs(objects) do
         love.graphics.setColor(obj.debugColor)
         local x, y = obj.collider:getPosition()
-        love.graphics.rectangle("fill",x-scroll_x,y-scroll_y,24,24)
+        local r = obj.radius or 12
+        love.graphics.circle("fill", x - scroll_x, y - scroll_y, r, r)
     end
 end
 
@@ -34,6 +37,11 @@ function love.update()
     movePlayer()
     scroll_x = player.collider:getX() - 400
     scroll_y = player.collider:getY() - 300
+
+    for _, obj in pairs(objects) do
+        if obj.alive and obj.update then obj:update(dt) end
+    end
+
     world:update(dt)
 end
 
@@ -68,6 +76,7 @@ function setup()
     createEnemy(40,0)
     createEnemy(80,0)
     createEnemy(120,0)
+    boss = LostMekkaBoss.new(0, 80)
 end
 
 function createPlayer(x, y)
