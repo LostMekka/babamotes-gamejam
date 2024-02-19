@@ -1,6 +1,6 @@
 require "math"
 
-local LostMekkaBoss = require("LostMekkaBoss")
+require("LostMekkaBoss")
 
 function love.draw()
     -- bg tiles
@@ -76,7 +76,7 @@ function setup()
     createEnemy(40,0)
     createEnemy(80,0)
     createEnemy(120,0)
-    boss = LostMekkaBoss.new(0, 80)
+    boss = LostMekkaBoss:new(0, 80)
 end
 
 function createPlayer(x, y)
