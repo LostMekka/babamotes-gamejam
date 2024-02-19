@@ -1,5 +1,6 @@
 require "math"
 
+require("Bullet")
 require("LostMekkaBoss")
 
 function love.draw()
@@ -12,10 +13,12 @@ function love.draw()
     end
     -- love.graphics.print(scroll_x, 400-scroll_x, 300-scroll_y)
     for _, obj in pairs(objects) do
-        love.graphics.setColor(obj.debugColor)
-        local x, y = obj.collider:getPosition()
-        local r = obj.radius or 12
-        love.graphics.circle("fill", x - scroll_x, y - scroll_y, r, r)
+        if obj.alive then
+            love.graphics.setColor(obj.debugColor)
+            local x, y = obj.collider:getPosition()
+            local r = obj.radius or 12
+            love.graphics.circle("fill", x - scroll_x, y - scroll_y, r, r)
+        end
     end
 end
 
@@ -24,7 +27,8 @@ function love.load()
     world = wf.newWorld()
     world:addCollisionClass("player")
     world:addCollisionClass("enemy")
-    world:addCollisionClass("bullet", { ignores = { "bullet" } })
+    world:addCollisionClass("playerBullet", { ignores = { "playerBullet", "player" } })
+    world:addCollisionClass("enemyBullet", { ignores = { "playerBullet", "enemyBullet", "enemy" } })
     setup()
 end
 
