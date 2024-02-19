@@ -2,7 +2,8 @@ function love.draw()
     -- love.graphics.print(scroll_x, 400-scroll_x, 300-scroll_y)
     for o,obj in pairs(objects) do
         love.graphics.setColor(obj.debugColor)
-        love.graphics.rectangle("fill",obj.x-scroll_x,obj.y-scroll_y,24,24)
+        local x, y = obj.collider:getPosition()
+        love.graphics.rectangle("fill",x-scroll_x,y-scroll_y,24,24)
     end
 end
 
@@ -16,20 +17,18 @@ function love.load()
 end
 
 function love.update()
-    local player = objects[1]
-    dt = love.timer.getDelta()
-    movePlayer()
     if love.keyboard.isScancodeDown("escape") then
         love.event.quit()
     end
-    scroll_x = player.x - 400
-    scroll_y = player.y - 300
+
+    dt = love.timer.getDelta()
+    movePlayer()
+    scroll_x = player.collider:getX() - 400
+    scroll_y = player.collider:getY() - 300
     world:update(dt)
 end
 
 function movePlayer()
-    player.x, player.y = player.collider:getPosition() -- we should prly use the collider coords directly
-
     local playerMoveX, playerMoveY = 0, 0
     if love.keyboard.isScancodeDown("up","w") then
         playerMoveY = playerMoveY - 1
@@ -56,18 +55,31 @@ function setup()
     scroll_x = 0
     scroll_y = 0
     player = createPlayer(0, 0) -- always make sure player is at position 1
-    newobj("test",40,0)
+    createEnemy(40,0)
+    createEnemy(80,0)
+    createEnemy(120,0)
 end
 
 function createPlayer(x, y)
     local self = {}
     self.type = "player"
-    self.x = x
-    self.y = y
     self.alive = true
-    self.debugColor = { 1, 1, 1 }
+    self.debugColor = { 0, 0.7, 0 }
     self.collider = world:newCircleCollider(x, y, 12)
     self.collider:setCollisionClass("player")
+    self.collider:setLinearDamping(playerMovementDamping)
+    self.collider:setObject(self)
+    table.insert(objects, self)
+    return self
+end
+
+function createEnemy(x, y)
+    local self = {}
+    self.type = "enemy"
+    self.alive = true
+    self.debugColor = { 1, 0, 0 }
+    self.collider = world:newCircleCollider(x, y, 12)
+    self.collider:setCollisionClass("enemy")
     self.collider:setLinearDamping(playerMovementDamping)
     self.collider:setObject(self)
     table.insert(objects, self)
