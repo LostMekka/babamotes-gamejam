@@ -37,7 +37,7 @@ function love.update()
         love.event.quit()
     end
 
-    dt = love.timer.getDelta()
+    local dt = love.timer.getDelta()
     movePlayer()
     scroll_x = player.collider:getX() - 400
     scroll_y = player.collider:getY() - 300
