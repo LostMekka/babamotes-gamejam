@@ -13,11 +13,13 @@ player = nil
 boss = nil
 customWorldUpdate = nil
 
+local portalSize = 30
+
 local function createNewWorld()
     local wf = require("libs/windfield")
     if world then world:destroy() end
     objects = {}
-    player = nil
+    player = nil -- TODO: preserve player hp when changing worlds
     boss = nil
     customWorldUpdate = nil
     resetWorldViewport()
@@ -83,7 +85,6 @@ end
 function createHubWorld()
     createNewWorld()
     createPlayer()
-    local portalSize = 30
     local portalDistance = 100
     Portal:new(
             -portalDistance, -portalDistance, portalSize,
@@ -137,4 +138,12 @@ end
 
 function createIiiAaa123BossArenaWorld()
     -- TODO
+end
+
+function spawnPortalToHubWorld(x, y)
+    Portal:new(
+            x, y, portalSize,
+            createHubWorld,
+            "back to hub"
+    )
 end
