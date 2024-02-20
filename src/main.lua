@@ -1,10 +1,10 @@
 require "math"
 
+require("TriggerArea")
 require("Bullet")
 require("Player")
 require("LostMekkaBoss")
 require("someone1065Boss")
-require("GroundObject")
 
 function love.draw()
     -- bg tiles
@@ -34,7 +34,7 @@ function love.load()
     world:addCollisionClass("enemy")
     world:addCollisionClass("playerBullet", { ignores = { "playerBullet", "player" } })
     world:addCollisionClass("enemyBullet", { ignores = { "playerBullet", "enemyBullet", "enemy" } })
-    world:addCollisionClass("groundObject", { ignores = { "playerBullet", "player", "enemyBullet", "enemy", "groundObject" } })
+    world:addCollisionClass("trigger", { ignores = { "trigger", "player", "enemy", "playerBullet", "enemyBullet" } })
     setup()
 end
 
@@ -46,6 +46,10 @@ function love.update()
     local dt = love.timer.getDelta()
     for _, obj in pairs(objects) do
         if obj.alive and obj.update then obj:update(dt) end
+    end
+
+    if player.collider:enter("playerTrigger") then
+        player.hp = player.hp + 10
     end
 
     world:update(dt)
@@ -69,9 +73,11 @@ function setup()
     boss = LostMekkaBoss:new(0, 80)
     boss = someone1065Boss:new(120, 80)
 
-    test_ground_1 = GroundObject:new(200, 200, {player}, 10000, 12, function()
-        player:damage(1)
-    end)
+    test_ground_1 = TriggerArea:new(
+            200, 200, 30, nil,
+            { player },
+            function(_, dt) player:damage(dt * 10) end
+    )
 end
 
 function createEnemy(x, y)
