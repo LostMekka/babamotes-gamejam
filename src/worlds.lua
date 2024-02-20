@@ -11,6 +11,7 @@ objects = {}
 world = nil
 player = nil
 boss = nil
+customWorldUpdate = nil
 
 local function createNewWorld()
     local wf = require("libs/windfield")
@@ -18,6 +19,8 @@ local function createNewWorld()
     objects = {}
     player = nil
     boss = nil
+    customWorldUpdate = nil
+    resetWorldViewport()
     world = wf.newWorld()
     world:addCollisionClass("player")
     world:addCollisionClass("enemy")
@@ -104,6 +107,11 @@ function createHubWorld()
             createLostMekkaBossArenaWorld,
             "LostMekka"
     )
+    customWorldUpdate = function()
+        worldViewport:setTargetPosition(player.collider:getPosition())
+        local x, y = player.collider:getPosition()
+        worldViewport:setTargetScale(1 / (math.sqrt(x*x + y*y) / 400 + 1))
+    end
 end
 
 function createLostMekkaBossArenaWorld()

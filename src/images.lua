@@ -1,4 +1,4 @@
-images = {}
+local images = {}
 
 function drawimage(path, x, y, sx_, sy_)
     local sx = sx_ or 1
