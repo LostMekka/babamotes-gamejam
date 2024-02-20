@@ -38,6 +38,7 @@ function Bullet:new(
     object.debugColor = { 0.7, 0, 0.5 }
     object.sourceEntity = sourceEntity or error("aaa")
     object.targetEntity = targetEntity
+    object.targetCollisionClass = targetEntity.collider.collision_class
     object.velocity = velocity
     object.maxLifetime = maxLifetime
     object.currLifetime = 0
@@ -55,19 +56,27 @@ function Bullet:new(
     object.collider:setLinearDamping(linearDamping or 0)
     object.collider:setLinearVelocity(dx / d * velocity, dy / d * velocity)
     object.collider:setObject(object)
-    -- TODO: add collision logic (deal damage and call customOnHit)
 
     table.insert(objects, object)
     return object
 end
 
 function Bullet:update(dt)
+    if self.collider:enter(self.targetCollisionClass) then
+        local collision = self.collider:getEnterCollisionData(self.targetCollisionClass)
+        local hitObject = collision.collider:getObject()
+        if hitObject.damage then hitObject:damage(self.damage) end
+        self:destroy()
+        if self.customOnHit then self:customOnHit() end
+    end
+
     self.currLifetime = self.currLifetime + dt
     if self.currLifetime >= self.maxLifetime then
         self:destroy()
         if self.customOnEndOfLife then self:customOnEndOfLife() end
         return
     end
+
     if self.customUpdate then self:customUpdate(dt) end
 end
 
