@@ -22,6 +22,7 @@ function love.draw()
             local x, y = obj.collider:getPosition()
             local r = obj.radius or 12
             love.graphics.circle("fill", x - scroll_x, y - scroll_y, r, r)
+            if obj.draw then obj:draw() end
         end
     end
 
