@@ -34,6 +34,9 @@ function love.draw()
     -- GUI
     screenViewport:use(function()
         love.graphics.print(string.format("player hp: %d", player.hp), 5, 5)
+        if boss and boss.alive and boss.hp then
+            love.graphics.print(string.format("boss hp: %d", boss.hp), 5, 20)
+        end
     end)
 end
 
