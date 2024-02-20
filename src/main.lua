@@ -8,10 +8,10 @@ require("someone1065Boss")
 
 function love.draw()
     -- bg tiles
-    love.graphics.setColor(1,1,1)
-    for i=math.floor((scroll_x)/128),math.ceil((scroll_x+800)/128) do
-        for j=math.floor((scroll_y)/128),math.ceil((scroll_y+600)/128) do
-            drawimage("sprites/floor-tile.png",i*128-scroll_x,j*128-scroll_y)
+    love.graphics.setColor(1, 1, 1)
+    for i = math.floor((scroll_x) / 128), math.ceil((scroll_x + 800) / 128) do
+        for j = math.floor((scroll_y) / 128), math.ceil((scroll_y + 600) / 128) do
+            drawimage("sprites/floor-tile.png", i * 128 - scroll_x, j * 128 - scroll_y)
         end
     end
 
@@ -45,7 +45,9 @@ function love.update()
 
     local dt = love.timer.getDelta()
     for _, obj in pairs(objects) do
-        if obj.alive and obj.update then obj:update(dt) end
+        if obj.alive and obj.update then
+            obj:update(dt)
+        end
     end
 
     if player.collider:enter("playerTrigger") then
@@ -65,9 +67,9 @@ function setup()
     scroll_x = 0
     scroll_y = 0
     player = Player:new(0, 0)
-    createEnemy(40,0)
-    createEnemy(80,0)
-    createEnemy(120,0)
+    createEnemy(40, 0)
+    createEnemy(80, 0)
+    createEnemy(120, 0)
 
     -- TODO: only one boss should exist per world
     boss = LostMekkaBoss:new(0, 80)
@@ -76,7 +78,9 @@ function setup()
     test_ground_1 = TriggerArea:new(
             200, 200, 30, nil,
             { player },
-            function(_, dt) player:damage(dt * 10) end
+            function(_, dt)
+                player:damage(dt * 10)
+            end
     )
 end
 
@@ -93,14 +97,14 @@ function createEnemy(x, y)
     return self
 end
 
-function newobj(type,x,y)
-    local newobj = {}
-    newobj.type = type
-    newobj.x = x
-    newobj.y = y
-    newobj.alive = true
-    newobj.debugColor = type == "player" and { 1, 1, 1 } or { 1, 0, 0 }
-    table.insert(objects,newobj)
+function newobj(type, x, y)
+    local obj = {}
+    obj.type = type
+    obj.x = x
+    obj.y = y
+    obj.alive = true
+    obj.debugColor = type == "player" and { 1, 1, 1 } or { 1, 0, 0 }
+    table.insert(objects, obj)
 end
 
 function drawimage(path, x, y, sx_, sy_)
