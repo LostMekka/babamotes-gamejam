@@ -12,7 +12,7 @@ function love.draw()
             drawimage("sprites/floor-tile.png",i*128-scroll_x,j*128-scroll_y)
         end
     end
-    -- love.graphics.print(scroll_x, 400-scroll_x, 300-scroll_y)
+
     for _, obj in pairs(objects) do
         if obj.alive then
             love.graphics.setColor(obj.debugColor)
@@ -21,6 +21,8 @@ function love.draw()
             love.graphics.circle("fill", x - scroll_x, y - scroll_y, r, r)
         end
     end
+
+    love.graphics.print(string.format("player hp: %d", player.hp), 5, 5)
 end
 
 function love.load()
