@@ -2,6 +2,9 @@ require("Bullet")
 
 Player = {}
 
+playerMovementForce = 1500
+playerMovementDamping = 5
+
 function Player:new(startX, startY)
     local object = {}
     setmetatable(object, self)
