@@ -3,6 +3,7 @@ require "math"
 require("Bullet")
 require("Player")
 require("LostMekkaBoss")
+require("someone1065Boss")
 require("GroundObject")
 
 function love.draw()
@@ -63,7 +64,11 @@ function setup()
     createEnemy(40,0)
     createEnemy(80,0)
     createEnemy(120,0)
+
+    -- TODO: only one boss should exist per world
     boss = LostMekkaBoss:new(0, 80)
+    boss = someone1065Boss:new(120, 80)
+
     test_ground_1 = GroundObject:new(200, 200, {player}, 10000, 12, function()
         player:damage(1)
     end)
