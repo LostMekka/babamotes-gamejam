@@ -1,4 +1,5 @@
 require("Hammer")
+require("OrbitThing")
 
 someone1065Boss = {}
 
@@ -32,7 +33,7 @@ function someone1065Boss:update(dt)
         px, py = player.collider:getPosition()
     end
     local x, y = self.collider:getPosition()
-    local speed = 10
+    local speed = 20
     self.collider:applyForce((px - x) * speed, (py - y) * speed)
 
     self.shootTimer = self.shootTimer + dt
@@ -40,11 +41,11 @@ function someone1065Boss:update(dt)
         self.hammer = Hammer:new(
                 self,
                 player,
-                400,
+                1200,
                 3,
                 1,
-                5,
-                1,
+                10,
+                3,
                 nil,
                 nil,
                 nil
