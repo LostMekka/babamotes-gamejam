@@ -3,6 +3,7 @@ require "math"
 require("Bullet")
 require("Player")
 require("LostMekkaBoss")
+require("someone1065Boss")
 
 function love.draw()
     -- bg tiles
