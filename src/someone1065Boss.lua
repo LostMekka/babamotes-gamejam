@@ -10,7 +10,7 @@ function someone1065Boss:new(startX, startY)
 
     object.type = "enemy"
     object.alive = true
-    object.belongsToPlayer = true
+    object.belongsToPlayer = false
     object.debugColor = { 0.447, 0.537, 0.855 }
     object.radius = 20
     object.collider = world:newCircleCollider(startX, startY, object.radius)
