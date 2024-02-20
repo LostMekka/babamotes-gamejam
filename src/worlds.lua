@@ -30,7 +30,7 @@ local function createNewWorld()
     return world
 end
 
-function setupTestWorld()
+function createTestWorld()
     createNewWorld()
     createPlayer()
 
@@ -105,6 +105,13 @@ function createHubWorld()
             createLostMekkaBossArenaWorld,
             "LostMekka"
     )
+
+    Portal:new(
+            0, portalDistance * 1.3, portalSize,
+            createTestWorld,
+            "DEV test world"
+    )
+
     customWorldUpdate = function()
         worldViewport:setTargetPosition(player.collider:getPosition())
         local x, y = player.collider:getPosition()
