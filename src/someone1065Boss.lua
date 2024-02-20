@@ -25,25 +25,26 @@ function someone1065Boss:new(startX, startY)
 end
 
 function someone1065Boss:update(dt)
---[[    if Hammer.alive then
-        local px, py = Hammer.collider:getPosition()
-    else]]
-        local px, py = player.collider:getPosition()
---[[    end]]
+    local px, py
+    if self.hammer and self.hammer.alive then
+        px, py = self.hammer.collider:getPosition()
+    else
+        px, py = player.collider:getPosition()
+    end
     local x, y = self.collider:getPosition()
     local speed = 10
     self.collider:applyForce((px - x) * speed, (py - y) * speed)
 
     self.shootTimer = self.shootTimer + dt
-    if not self.hammer and not self.hammer.alive then
-        Hammer:new(
+    if not self.hammer or not self.hammer.alive then
+        self.hammer = Hammer:new(
                 self,
                 player,
                 400,
                 3,
                 1,
                 5,
-                0,
+                1,
                 nil,
                 nil,
                 nil
