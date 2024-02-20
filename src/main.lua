@@ -61,6 +61,7 @@ function setup()
     createEnemy(80,0)
     createEnemy(120,0)
     boss = LostMekkaBoss:new(0, 80)
+    boss = someone1065Boss:new(120, 80)
 end
 
 function createEnemy(x, y)
