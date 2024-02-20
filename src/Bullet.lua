@@ -31,6 +31,7 @@ function Bullet:new(
     local tx, ty = targetEntity.collider:getPosition()
     local dx, dy = tx - sx, ty - sy
     local d = math.sqrt(dx * dx + dy * dy)
+    local sourceR = sourceEntity.radius or 5
 
     object.type = "bullet"
     object.belongsToPlayer = sourceEntity.belongsToPlayer
@@ -48,7 +49,7 @@ function Bullet:new(
     object.customUpdate = customUpdate
     object.customOnHit = customOnHit
     object.customOnEndOfLife = customOnEndOfLife
-    object.collider = world:newCircleCollider(sx, sy, radius) -- TODO: add some distance so not every shot comes from the center
+    object.collider = world:newCircleCollider(sx + dx / d * sourceR, sy + dy / d * sourceR, radius)
     object.collider:setCollisionClass("enemyBullet")
     object.collider:setBullet(true)
     object.collider:setMass(1)
