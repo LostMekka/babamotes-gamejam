@@ -13,6 +13,7 @@ world = nil
 local function createNewWorld()
     local wf = require("libs/windfield")
     if world then world:destroy() end
+    objects = {}
     world = wf.newWorld()
     world:addCollisionClass("player")
     world:addCollisionClass("enemy")
