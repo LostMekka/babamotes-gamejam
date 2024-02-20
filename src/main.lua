@@ -3,6 +3,7 @@ require "math"
 require("Bullet")
 require("Player")
 require("LostMekkaBoss")
+require("GroundObject")
 
 function love.draw()
     -- bg tiles
@@ -32,6 +33,7 @@ function love.load()
     world:addCollisionClass("enemy")
     world:addCollisionClass("playerBullet", { ignores = { "playerBullet", "player" } })
     world:addCollisionClass("enemyBullet", { ignores = { "playerBullet", "enemyBullet", "enemy" } })
+    world:addCollisionClass("groundObject", { ignores = { "playerBullet", "player", "enemyBullet", "enemy", "groundObject" } })
     setup()
 end
 
@@ -62,6 +64,9 @@ function setup()
     createEnemy(80,0)
     createEnemy(120,0)
     boss = LostMekkaBoss:new(0, 80)
+    test_ground_1 = GroundObject:new(200, 200, {player}, 10000, 12, function()
+        player:damage(1)
+    end)
 end
 
 function createEnemy(x, y)
