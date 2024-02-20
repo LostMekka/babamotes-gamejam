@@ -54,10 +54,6 @@ function love.update()
         end
     end
 
-    if player.collider:enter("playerTrigger") then
-        player.hp = player.hp + 10
-    end
-
     world:update(dt)
     if customWorldUpdate then
         customWorldUpdate(dt)
