@@ -24,6 +24,6 @@ function Portal:draw()
     if self.text then
         local x, y = self.collider:getPosition()
         love.graphics.setColor(0, 0, 0)
-        love.graphics.print(self.text, x - scroll_x, y - scroll_y)
+        love.graphics.print(self.text, x, y)
     end
 end

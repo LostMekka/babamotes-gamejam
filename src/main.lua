@@ -16,7 +16,7 @@ function love.draw()
         local vpx, vpy, vpw, vph = worldViewport:getWorldViewportRect()
         for i = math.floor(vpx / 128), math.ceil((vpx + vpw) / 128) do
             for j = math.floor(vpy / 128), math.ceil((vpy + vph) / 128) do
-                drawimage("sprites/floor-tile.png", i * 128 - scroll_x, j * 128 - scroll_y)
+                drawimage("sprites/floor-tile.png", i * 128, j * 128)
             end
         end
         -- game entities

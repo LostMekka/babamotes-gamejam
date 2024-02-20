@@ -77,8 +77,6 @@ function createPlayer(x, y)
     if player then error("cannot create new player: one already exists!") end
     x = x or 0
     y = y or 0
-    scroll_x = x
-    scroll_y = y
     player = Player:new(x, y)
 end
 
