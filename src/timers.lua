@@ -11,7 +11,21 @@ function TimerArray:setTimer(name, time, recurring, callback)
     if type(name) ~= "string" then error("timer name must be a string") end
     if type(time) ~= "number" or time <= 0 then error("timer time must be a number and greater than zero") end
     if type(callback) ~= "function" then error("timer callback must be a function") end
-    self[name] = { maxTime = time, time = time, recurring = recurring, callback = callback }
+    self[name] = { maxTime = time, time = 0, recurring = recurring, callback = callback }
+end
+
+function TimerArray:updateTimer(name, time, recurring, callback)
+    if type(name) ~= "string" then error("timer name must be a string") end
+    if time ~= nil and (type(time) ~= "number" or time <= 0) then error("timer time must be a number and greater than zero") end
+    if callback ~= nil and type(callback) ~= "function" then error("timer callback must be a function") end
+    local timer = self[name]
+    if not timer then return end
+    if time then
+        timer.maxTime = time
+        if timer.time > timer.maxTime then timer.time = timer.maxTime end
+    end
+    if type(recurring) == "boolean" then timer.recurring = recurring end
+    if callback then timer.callback = callback end
 end
 
 function TimerArray:clearTimer(name)
@@ -38,11 +52,11 @@ end
 
 function TimerArray:update(dt)
     for name, timer in pairs(self) do
-        timer.time = timer.time - dt
-        if timer.time <= 0 then
+        timer.time = timer.time + dt
+        if timer.time >= timer.maxTime then
             timer.callback()
             if timer.recurring then
-                timer.time = timer.time + timer.maxTime
+                timer.time = timer.time - timer.maxTime
             else
                 self[name] = nil
             end
