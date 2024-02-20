@@ -61,7 +61,7 @@ function love.update()
     world:update(dt)
     if customWorldUpdate then
         customWorldUpdate(dt)
-    else
+    elseif player.alive then
         worldViewport:setTargetPosition(player.collider:getPosition())
     end
     worldViewport:update(dt)

@@ -24,7 +24,7 @@ function Player:new(startX, startY)
     object.collider:setLinearDamping(playerMovementDamping)
     object.collider:setObject(object)
 
-    object.hp = 100
+    addHpComponentToEntity(object, 100)
     object.timers = TimerArray:new()
     object.canShoot = true
 
@@ -70,9 +70,4 @@ function Player:update(dt)
                 nil
         )
     end
-end
-
-function Player:damage(amount)
-    self.hp = self.hp - amount
-    -- TODO: check for player death
 end

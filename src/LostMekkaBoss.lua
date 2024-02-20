@@ -49,6 +49,7 @@ end
 
 function LostMekkaBoss:update(dt)
     self.timers:update(dt)
+    if not player.alive then return end
 
     local px, py = player.collider:getPosition()
     local x, y = self.collider:getPosition()
