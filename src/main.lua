@@ -25,7 +25,7 @@ function love.draw()
                 love.graphics.setColor(obj.debugColor)
                 local x, y = obj.collider:getPosition()
                 local r = obj.radius or 12
-                love.graphics.circle("fill", x, y, r, r)
+                love.graphics.circle("fill", x, y, r)
                 if obj.draw then obj:draw() end
             end
         end

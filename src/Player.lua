@@ -1,9 +1,13 @@
+require("timers")
 require("Bullet")
 
 Player = {}
 
 playerMovementForce = 1500
 playerMovementDamping = 5
+playerShootCooldown = 0.1
+playerShootVelocity = 400
+playerShootDamage = 1
 
 function Player:new(startX, startY)
     local object = {}
@@ -21,12 +25,16 @@ function Player:new(startX, startY)
     object.collider:setObject(object)
 
     object.hp = 100
+    object.timers = TimerArray:new()
+    object.canShoot = true
 
     table.insert(objects, object)
     return object
 end
 
 function Player:update(dt)
+    self.timers:update(dt)
+
     local moveX, moveY = 0, 0
     if love.keyboard.isScancodeDown("up","w") then
         moveY = moveY - 1
@@ -43,6 +51,24 @@ function Player:update(dt)
     local d = math.sqrt(moveX ^ 2 + moveY ^ 2)
     if (d > 0) then
         self.collider:applyForce(moveX / d * playerMovementForce, moveY / d * playerMovementForce)
+    end
+
+    if self.canShoot and love.mouse.isDown(1) then
+        self.canShoot = false
+        self.timers:setTimer("shoot cooldown", playerShootCooldown, false, function() self.canShoot = true end)
+        local mx, my = worldViewport:screenToWorld(love.mouse.getPosition())
+        Bullet:new(
+                self,
+                { x = mx, y = my },
+                playerShootVelocity,
+                3,
+                playerShootDamage,
+                5,
+                0,
+                nil,
+                nil,
+                nil
+        )
     end
 end
 

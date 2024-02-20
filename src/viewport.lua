@@ -57,8 +57,8 @@ function Viewport:use(block)
     else
         love.graphics.scale(self.scale)
         love.graphics.translate(
-                -self.x + sw / 2 / self.scale,
-                -self.y + sh / 2 / self.scale
+                sw / 2 / self.scale - self.x,
+                sh / 2 / self.scale - self.y
         )
     end
     block()
@@ -73,4 +73,10 @@ function Viewport:getWorldViewportRect()
     local w = sw / self.scale
     local h = sh / self.scale
     return x, y, w, h
+end
+
+function Viewport:screenToWorld(x, y)
+    local sw = love.graphics.getPixelWidth()
+    local sh = love.graphics.getPixelHeight()
+    return (x - sw / 2) / self.scale + self.x, (y - sh / 2) / self.scale + self.y
 end
