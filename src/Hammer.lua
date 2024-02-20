@@ -29,7 +29,8 @@ function Hammer:new(
 
     local sx, sy = sourceEntity.collider:getPosition()
     local tx, ty = targetEntity.collider:getPosition()
-    local dx, dy = tx - sx, ty - sy
+    local pvx, pvy = player.collider:getLinearVelocity()
+    local dx, dy = tx + pvx - sx, ty + pvy - sy
     local d = math.sqrt(dx * dx + dy * dy)
 
     object.type = "bullet"
