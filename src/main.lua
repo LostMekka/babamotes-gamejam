@@ -4,7 +4,7 @@ require("images")
 require("worlds")
 
 function love.load()
-    setupTestWorld()
+    createHubWorld()
 end
 
 function love.draw()

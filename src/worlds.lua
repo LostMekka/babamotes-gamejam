@@ -9,11 +9,15 @@ require("someone1065Boss")
 
 objects = {}
 world = nil
+player = nil
+boss = nil
 
 local function createNewWorld()
     local wf = require("libs/windfield")
     if world then world:destroy() end
     objects = {}
+    player = nil
+    boss = nil
     world = wf.newWorld()
     world:addCollisionClass("player")
     world:addCollisionClass("enemy")
@@ -25,18 +29,19 @@ end
 
 function setupTestWorld()
     createNewWorld()
-    scroll_x = 0
-    scroll_y = 0
-    player = Player:new(0, 0)
+    createPlayer()
+
+    -- some generic test enemies to see how collisions work
     createTestEnemy(40, 0)
     createTestEnemy(80, 0)
     createTestEnemy(120, 0)
 
-    -- TODO: only one boss should exist per world
+    -- some test boss instances
     boss = LostMekkaBoss:new(0, 80)
-    boss = someone1065Boss:new(120, 80)
+    someone1065Boss:new(120, 80)
 
-    test_ground_1 = TriggerArea:new(
+    -- a test trigger area that damages the player while staying inside
+    TriggerArea:new(
             200, 200, 30, nil,
             { player },
             function(_, dt)
@@ -44,7 +49,12 @@ function setupTestWorld()
             end
     )
 
-    portal = Portal:new(-100, 0, 20, function() player.hp = player.hp + 666 end)
+    -- a test portal that heals the player on enter
+    Portal:new(
+            -100, 0, 20,
+            function() player.hp = player.hp + 666 end,
+            "heal"
+    )
 end
 
 function createTestEnemy(x, y)
@@ -58,4 +68,60 @@ function createTestEnemy(x, y)
     self.collider:setObject(self)
     table.insert(objects, self)
     return self
+end
+
+function createPlayer(x, y)
+    if player then error("cannot create new player: one already exists!") end
+    x = x or 0
+    y = y or 0
+    scroll_x = x
+    scroll_y = y
+    player = Player:new(x, y)
+end
+
+function createHubWorld()
+    createNewWorld()
+    createPlayer()
+    local portalSize = 30
+    local portalDistance = 100
+    Portal:new(
+            -portalDistance, -portalDistance, portalSize,
+            createIiiAaa123BossArenaWorld,
+            "IiiAaa123"
+    )
+    Portal:new(
+            -portalDistance, portalDistance, portalSize,
+            createGabeyK9BossArenaWorld,
+            "GabeyK9"
+    )
+    Portal:new(
+            portalDistance, -portalDistance, portalSize,
+            createSomeone1065BossArenaWorld,
+            "Someone1065"
+    )
+    Portal:new(
+            portalDistance, portalDistance, portalSize,
+            createLostMekkaBossArenaWorld,
+            "LostMekka"
+    )
+end
+
+function createLostMekkaBossArenaWorld()
+    createNewWorld()
+    createPlayer()
+    boss = LostMekkaBoss:new(0, 250)
+end
+
+function createSomeone1065BossArenaWorld()
+    createNewWorld()
+    createPlayer()
+    boss = someone1065Boss:new(0, 250)
+end
+
+function createGabeyK9BossArenaWorld()
+    -- TODO
+end
+
+function createIiiAaa123BossArenaWorld()
+    -- TODO
 end
