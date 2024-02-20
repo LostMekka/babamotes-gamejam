@@ -1,5 +1,7 @@
 require "math"
 
+require("Bullet")
+require("Player")
 require("LostMekkaBoss")
 
 function love.draw()
@@ -10,13 +12,17 @@ function love.draw()
             drawimage("sprites/floor-tile.png",i*128-scroll_x,j*128-scroll_y)
         end
     end
-    -- love.graphics.print(scroll_x, 400-scroll_x, 300-scroll_y)
+
     for _, obj in pairs(objects) do
-        love.graphics.setColor(obj.debugColor)
-        local x, y = obj.collider:getPosition()
-        local r = obj.radius or 12
-        love.graphics.circle("fill", x - scroll_x, y - scroll_y, r, r)
+        if obj.alive then
+            love.graphics.setColor(obj.debugColor)
+            local x, y = obj.collider:getPosition()
+            local r = obj.radius or 12
+            love.graphics.circle("fill", x - scroll_x, y - scroll_y, r, r)
+        end
     end
+
+    love.graphics.print(string.format("player hp: %d", player.hp), 5, 5)
 end
 
 function love.load()
@@ -24,7 +30,8 @@ function love.load()
     world = wf.newWorld()
     world:addCollisionClass("player")
     world:addCollisionClass("enemy")
-    world:addCollisionClass("bullet", { ignores = { "bullet" } })
+    world:addCollisionClass("playerBullet", { ignores = { "playerBullet", "player" } })
+    world:addCollisionClass("enemyBullet", { ignores = { "playerBullet", "enemyBullet", "enemy" } })
     setup()
 end
 
@@ -33,36 +40,14 @@ function love.update()
         love.event.quit()
     end
 
-    dt = love.timer.getDelta()
-    movePlayer()
-    scroll_x = player.collider:getX() - 400
-    scroll_y = player.collider:getY() - 300
-
+    local dt = love.timer.getDelta()
     for _, obj in pairs(objects) do
         if obj.alive and obj.update then obj:update(dt) end
     end
 
     world:update(dt)
-end
-
-function movePlayer()
-    local playerMoveX, playerMoveY = 0, 0
-    if love.keyboard.isScancodeDown("up","w") then
-        playerMoveY = playerMoveY - 1
-    end
-    if love.keyboard.isScancodeDown("down","s") then
-        playerMoveY = playerMoveY + 1
-    end
-    if love.keyboard.isScancodeDown("left","a") then
-        playerMoveX = playerMoveX - 1
-    end
-    if love.keyboard.isScancodeDown("right","d") then
-        playerMoveX = playerMoveX + 1
-    end
-    local d = math.sqrt(playerMoveX ^ 2 + playerMoveY ^ 2)
-    if (d > 0) then
-        player.collider:applyForce(playerMoveX / d * playerMovementForce, playerMoveY / d * playerMovementForce)
-    end
+    scroll_x = player.collider:getX() - 400
+    scroll_y = player.collider:getY() - 300
 end
 
 function setup()
@@ -72,37 +57,19 @@ function setup()
     objects = {}
     scroll_x = 0
     scroll_y = 0
-    player = createPlayer(0, 0) -- always make sure player is at position 1
+    player = Player:new(0, 0)
     createEnemy(40,0)
     createEnemy(80,0)
     createEnemy(120,0)
-    createEnemy(60,-60,40)
     boss = LostMekkaBoss:new(0, 80)
 end
 
-function createPlayer(x, y)
-    local self = {}
-    self.type = "player"
-    self.alive = true
-    self.debugColor = { 0, 0.7, 0 }
-    self.collider = world:newCircleCollider(x, y, 12)
-    self.collider:setCollisionClass("player")
-    self.collider:setLinearDamping(playerMovementDamping)
-    self.collider:setObject(self)
-    table.insert(objects, self)
-    return self
-end
-
-function createEnemy(x, y, r)
+function createEnemy(x, y)
     local self = {}
     self.type = "enemy"
     self.alive = true
     self.debugColor = { 1, 0, 0 }
-    if r == nil then
-        r = 12
-    end
-    self.radius = r
-    self.collider = world:newCircleCollider(x, y, r)
+    self.collider = world:newCircleCollider(x, y, 12)
     self.collider:setCollisionClass("enemy")
     self.collider:setLinearDamping(playerMovementDamping)
     self.collider:setObject(self)
