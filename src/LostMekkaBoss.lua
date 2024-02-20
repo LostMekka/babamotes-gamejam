@@ -1,3 +1,4 @@
+require("entityHelpers")
 require("timers")
 require("Bullet")
 
@@ -23,7 +24,16 @@ function LostMekkaBoss:new(startX, startY)
     object.collider:setMass(object.mass)
     object.collider:setObject(object)
 
-    object.hp = object.maxHp
+    addHpComponentToEntity(
+            object,
+            object.maxHp,
+            nil,
+            function(self)
+                -- TODO: mark this boss as defeated
+                spawnPortalToHubWorld(self.collider:getPosition())
+            end
+    )
+
     object.canShoot = false
     object.timers = TimerArray:new()
     object.timers:setTimer(
@@ -64,16 +74,5 @@ function LostMekkaBoss:update(dt)
                 nil,
                 nil
         )
-    end
-end
-
-function LostMekkaBoss:damage(amount)
-    self.hp = self.hp - amount
-    if self.hp <= 0 then
-        self.hp = 0
-        self.alive = false
-        -- TODO: mark this boss as defeated
-        spawnPortalToHubWorld(self.collider:getPosition())
-        self.collider:destroy()
     end
 end
