@@ -1,6 +1,7 @@
 require "math"
 
 require("TriggerArea")
+require("Portal")
 require("Bullet")
 require("Player")
 require("LostMekkaBoss")
@@ -82,6 +83,8 @@ function setup()
                 player:damage(dt * 10)
             end
     )
+
+    portal = Portal:new(-100, 0, 20, function() player.hp = player.hp + 666 end)
 end
 
 function createEnemy(x, y)
