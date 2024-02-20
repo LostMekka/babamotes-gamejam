@@ -43,9 +43,11 @@ function love.update()
     end
 
     local dt = love.timer.getDelta()
-    for _, obj in pairs(objects) do
+    for key, obj in pairs(objects) do
         if obj.alive and obj.update then
             obj:update(dt)
+        else
+            objects[key] = nil
         end
     end
 
