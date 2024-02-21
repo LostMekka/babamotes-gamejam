@@ -42,9 +42,12 @@ function LostMekkaBoss:new(startX, startY)
             function() object.canShoot = true end
     )
 
+    object.forceShield = true
+    object.isShielded = true
     object.minionCount = 0
+    object.wavesToSpawn = 0
     object.bossPhase = 0
-    object.spawnSequence = nil
+    object.spawnSequence = ActionSequence:new(function(context) object:minionSpawnerCoroutine(context) end)
 
     table.insert(objects, object)
     return object
@@ -61,17 +64,17 @@ function LostMekkaBoss:draw()
 end
 
 function LostMekkaBoss:update(dt)
-    self.isShielded = self.minionCount >= 5
-    self.timers:update(dt)
-    if not player or not player.alive then return end
-
     local currPhase = math.floor((1 - self.hp / self.maxHp) * 4) + 1
     if self.bossPhase ~= currPhase then
         self.bossPhase = currPhase
         self:onBossPhaseStart()
     end
+    self.isShielded = self.forceShield or self.wavesToSpawn > 0 or self.minionCount >= 5
+    self.timers:update(dt)
 
-    if self.spawnSequence then self.spawnSequence:update(dt) end
+    if not player or not player.alive then return end
+
+    self.spawnSequence:update(dt)
 
     local px, py = player.collider:getPosition()
     local x, y = self.collider:getPosition()
@@ -105,11 +108,14 @@ function LostMekkaBoss:update(dt)
 end
 
 function LostMekkaBoss:minionSpawnerCoroutine(context, waveCount)
-    for _ = 1, waveCount do
+    while true do
         context:delay(1)
-        for _ = 1, 10 do
-            self:spawnMinion()
-            context:delay(0.05)
+        if self.wavesToSpawn > 0 then
+            self.wavesToSpawn = self.wavesToSpawn - 1
+            for _ = 1, 10 do
+                self:spawnMinion()
+                context:delay(0.05)
+            end
         end
     end
 end
@@ -128,9 +134,10 @@ function LostMekkaBoss:spawnMinion()
 end
 
 function LostMekkaBoss:onBossPhaseStart()
-    local spawnWaves = 3 * self.bossPhase
-    self.spawnSequence = ActionSequence:new(function(context)
-        self:minionSpawnerCoroutine(context, spawnWaves)
+    self.forceShield = true
+    self.timers:setTimer("spawning start", 3, 1, function()
+        self.wavesToSpawn = 3 * self.bossPhase
+        self.forceShield = false
     end)
 end
 
