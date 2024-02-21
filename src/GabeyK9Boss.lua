@@ -39,18 +39,20 @@ gk9Updates = {
             )
         elseif self.canBounce and self.alive then
             self.canBounce = false
-            local tx, ty = player.collider:getPosition()
-            local sx, sy = self.collider:getPosition()
-            local dx, dy = tx - sx, ty - sy
-            local d = math.sqrt(dx * dx + dy * dy)
-            if d == 0 then
-                d = 1
-                dx = 1
-                dy = 0
+            if math.random(1,3) ~= 3 then
+                local tx, ty = player.collider:getPosition()
+                local sx, sy = self.collider:getPosition()
+                local dx, dy = tx - sx, ty - sy
+                local d = math.sqrt(dx * dx + dy * dy)
+                if d == 0 then
+                    d = 1
+                    dx = 1
+                    dy = 0
+                end
+                velocityX = (dx / d * 400)
+                velocityY = (dy / d * 400)
+                self.collider:setLinearVelocity(velocityX, velocityY)
             end
-            velocityX = (dx / d * 400)
-            velocityY = (dy / d * 400)
-            self.collider:setLinearVelocity(velocityX, velocityY)
         end
     end
 }

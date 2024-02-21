@@ -95,6 +95,7 @@ function Bullet:update(dt)
         if hitObject.damage then hitObject:damage(self.damage) end
         if self.customOnHit then self:customOnHit() end
         self:destroy()
+        return
     end
 
     self.currLifetime = self.currLifetime + dt
