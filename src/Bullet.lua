@@ -92,7 +92,9 @@ function Bullet:update(dt)
     if self.collider:enter(self.targetCollisionClass) then
         local collision = self.collider:getEnterCollisionData(self.targetCollisionClass)
         local hitObject = collision.collider:getObject()
-        if hitObject.damage then hitObject:damage(self.damage) end
+        -- i encountered a weird bug where hitObject was nil. this should never happen, dunno where that came from.
+        -- anyways, better to check that it exists here...
+        if hitObject and hitObject.damage then hitObject:damage(self.damage) end
         if self.customOnHit then self:customOnHit() end
         self:destroy()
         return
