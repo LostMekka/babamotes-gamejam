@@ -6,6 +6,7 @@ require("Bullet")
 require("Player")
 require("LostMekkaBoss")
 require("someone1065Boss")
+require("GabeyK9Boss")
 
 objects = {}
 world = nil
@@ -133,7 +134,9 @@ function createSomeone1065BossArenaWorld()
 end
 
 function createGabeyK9BossArenaWorld()
-    -- TODO
+    createNewWorld()
+    createPlayer()
+    boss = GabeyK9Boss:new(0, 250)
 end
 
 function createIiiAaa123BossArenaWorld()
