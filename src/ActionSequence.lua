@@ -22,21 +22,29 @@ function ActionSequence:new(sequence, onFinish)
     setmetatable(object, self)
     self.__index = self
     object.context = ActionSequenceContext:new()
-    object.co = coroutine.create(function()
-        local status, error = xpcall(
-                function() sequence(object.context) end,
-                function(error)
-                    object.context.errorStackTrace = traceback(2, 3)
-                    return error
-                end
-        )
-        if not status then object.context.error = error end
-    end)
+    object.sequence = sequence
+    object.co = nil
     object.onFinish = onFinish
     return object
 end
 
+function ActionSequence:restart()
+    self.context.error = nil
+    self.context.errorStackTrace = nil
+    self.co = coroutine.create(function()
+        local status, error = xpcall(
+                function() self.sequence(self.context) end,
+                function(error)
+                    self.context.errorStackTrace = traceback(2, 3)
+                    return error
+                end
+        )
+        if not status then self.context.error = error end
+    end)
+end
+
 function ActionSequence:update(dt)
+    if not self.co then self:restart() end
     if self:isFinished() then return dt end
     self.context.dt = dt
 
