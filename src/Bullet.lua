@@ -125,14 +125,14 @@ function Bullet:update(dt)
         local collision = self.collider:getEnterCollisionData(self.targetCollisionClass)
         local hitObject = collision.collider:getObject()
         if hitObject.damage then hitObject:damage(self.damage) end
-        self:destroy()
         if self.customOnHit then self:customOnHit() end
+        self:destroy()
     end
 
     self.currLifetime = self.currLifetime + dt
     if self.currLifetime >= self.maxLifetime then
-        self:destroy()
         if self.customOnEndOfLife then self:customOnEndOfLife() end
+        self:destroy()
         return
     end
 
