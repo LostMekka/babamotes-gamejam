@@ -1,6 +1,7 @@
 require("entityHelpers")
 require("timers")
 require("Bullet")
+require("LostMekkaMinion")
 
 LostMekkaBoss = {
     type = "enemy",
@@ -49,31 +50,35 @@ end
 
 function LostMekkaBoss:update(dt)
     self.timers:update(dt)
-    if not player.alive then return end
+    if not player or not player.alive then return end
 
     local px, py = player.collider:getPosition()
     local x, y = self.collider:getPosition()
     local dx, dy = px - x, py - y
     local d = math.sqrt(dx * dx + dy * dy)
-    local minD = 150
+    local minD = 250
+    local maxD = 500
     local speed = 5000
-    if d > minD then
+    if d < minD then
+        self.collider:applyForce(dx / d * -speed, dy / d * -speed)
+    elseif d > maxD then
         self.collider:applyForce(dx / d * speed, dy / d * speed)
     end
 
     if self.canShoot then
         self.canShoot = false
-        Bullet:new(
-                self,
-                player,
-                400,
-                3,
-                1,
-                5,
-                0,
-                nil,
-                nil,
-                nil
-        )
+        LostMekkaMinion:new(x + dx / d * 20, y + dy / d * 20)
+        --Bullet:new(
+        --        self,
+        --        player,
+        --        400,
+        --        3,
+        --        1,
+        --        5,
+        --        0,
+        --        nil,
+        --        nil,
+        --        nil
+        --)
     end
 end
