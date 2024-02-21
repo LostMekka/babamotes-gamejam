@@ -39,7 +39,7 @@ function LostMekkaBoss:new(startX, startY)
     object.timers:setTimer(
             "shooting",
             object.shootInterval,
-            true,
+            -1,
             function() object.canShoot = true end
     )
 

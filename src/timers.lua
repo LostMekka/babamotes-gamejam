@@ -7,14 +7,14 @@ function TimerArray:new()
     return o
 end
 
-function TimerArray:setTimer(name, time, recurring, callback)
+function TimerArray:setTimer(name, time, count, callback)
     if type(name) ~= "string" then error("timer name must be a string") end
     if type(time) ~= "number" or time <= 0 then error("timer time must be a number and greater than zero") end
     if type(callback) ~= "function" then error("timer callback must be a function") end
-    self[name] = { maxTime = time, time = 0, recurring = recurring, callback = callback }
+    self[name] = { maxTime = time, time = 0, count = count, callback = callback }
 end
 
-function TimerArray:updateTimer(name, time, recurring, callback)
+function TimerArray:updateTimer(name, time, count, callback)
     if type(name) ~= "string" then error("timer name must be a string") end
     if time ~= nil and (type(time) ~= "number" or time <= 0) then error("timer time must be a number and greater than zero") end
     if callback ~= nil and type(callback) ~= "function" then error("timer callback must be a function") end
@@ -24,7 +24,7 @@ function TimerArray:updateTimer(name, time, recurring, callback)
         timer.maxTime = time
         if timer.time > timer.maxTime then timer.time = timer.maxTime end
     end
-    if type(recurring) == "boolean" then timer.recurring = recurring end
+    if type(count) == "number" then timer.count = count end
     if callback then timer.callback = callback end
 end
 
@@ -55,9 +55,10 @@ function TimerArray:update(dt)
         timer.time = timer.time + dt
         if timer.time >= timer.maxTime then
             timer.callback()
-            if timer.recurring then
-                timer.time = timer.time - timer.maxTime
-            else
+            timer.time = timer.time - timer.maxTime
+            if timer.count > 1 then
+                timer.count = timer.count - 1
+            elseif timer.count > 0 then
                 self[name] = nil
             end
         end

@@ -34,7 +34,7 @@ gk9Updates = {
             self.timers:setTimer(
                     "bouncing",
                     0.5,
-                    true,
+                    -1,
                     function() self.canBounce = true end
             )
         elseif self.canBounce and self.alive then
@@ -141,7 +141,7 @@ function GabeyK9Boss:new(startX, startY)
     object.timers:setTimer(
             "shooting",
             object.shootInterval,
-            true,
+            -1,
             function() object.canShoot = true end
     )
 

@@ -55,7 +55,7 @@ function Player:update(dt)
 
     if self.canShoot and love.mouse.isDown(1) then
         self.canShoot = false
-        self.timers:setTimer("shoot cooldown", playerShootCooldown, false, function() self.canShoot = true end)
+        self.timers:setTimer("shoot cooldown", playerShootCooldown, 1, function() self.canShoot = true end)
         local mx, my = worldViewport:screenToWorld(love.mouse.getPosition())
         Bullet:new(
                 self,
