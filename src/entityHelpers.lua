@@ -8,7 +8,7 @@ function addHpComponentToEntity(entity, maxHp, customOnDamage, customOnDeath)
             self.hp = 0
             self.alive = false
             if customOnDeath then customOnDeath(self) end
-            self.collider:destroy()
+            if not self.collider:isDestroyed() then self.collider:destroy() end
         end
     end
 end
