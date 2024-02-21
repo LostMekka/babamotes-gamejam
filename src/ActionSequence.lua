@@ -59,6 +59,11 @@ function ActionSequence:isFinished()
 end
 
 function ActionSequenceContext:delay(duration)
+    if not duration or duration <= 0 then
+        self.dt = 0
+        coroutine.yield()
+        return
+    end
     local t = duration
     while true do
         if t > self.dt then
