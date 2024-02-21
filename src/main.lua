@@ -5,6 +5,7 @@ require("worlds")
 require("viewport")
 
 function love.load()
+    love.window.setMode(1024, 768)
     createHubWorld()
 end
 
