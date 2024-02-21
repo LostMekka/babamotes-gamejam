@@ -84,11 +84,9 @@ gk9EOLs = {
         local x, y = self.collider:getPosition()
         local rnd = math.random(1,8)
         for i=1,5 do
-            local velX = math.cos(i*math.pi*0.4)*400
-            local velY = math.sin(i*math.pi*0.4)*400
+            local vel = 400
             if rnd == 7 then
-                velX = velX * 2
-                velY = velY * 2
+                vel = vel * 2
             end
             local dmg = 1
             if rnd == 1 then
@@ -98,10 +96,10 @@ gk9EOLs = {
             if rnd == 5 or rnd == 6 then
                 maxLife = 0.5
             end
-            Bullet:new_dir(
+            Bullet:new(
                     self,
-                    velX,
-                    velY,
+                    { angle = i * math.pi * 0.4 },
+                    vel,
                     maxLife,
                     dmg,
                     5,
@@ -168,11 +166,9 @@ function GabeyK9Boss:update(dt)
         local offset = math.random(0,7)
         for i=1,8 do
             local j = i + offset
-            local velX = math.cos(j*math.pi/4)*400
-            local velY = math.sin(j*math.pi/4)*400
+            local vel = 400
             if i == 7 then
-                velX = velX * 2
-                velY = velY * 2
+                vel = vel * 2
             end
             local dmg = 1
             if i == 1 then
@@ -182,10 +178,10 @@ function GabeyK9Boss:update(dt)
             if i == 5 or i == 6 then
                 maxLife = 0.5
             end
-            Bullet:new_dir(
+            Bullet:new(
                     self,
-                    velX,
-                    velY,
+                    { angle = j * math.pi / 4 },
+                    400,
                     maxLife,
                     dmg,
                     5,
