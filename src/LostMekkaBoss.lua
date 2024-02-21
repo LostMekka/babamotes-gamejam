@@ -33,21 +33,16 @@ function LostMekkaBoss:new(startX, startY)
             function(self) self:onDeath() end
     )
 
-    object.canShoot = false
     object.timers = TimerArray:new()
-    object.timers:setTimer(
-            "shooting",
-            object.shootInterval,
-            -1,
-            function() object.canShoot = true end
-    )
 
-    object.forceShield = true
+    object.idle = true
     object.isShielded = true
     object.minionCount = 0
     object.wavesToSpawn = 0
     object.bossPhase = 0
+    object.shieldSequence = ActionSequence:new(function(context) object:shieldCoroutine(context) end)
     object.spawnSequence = ActionSequence:new(function(context) object:minionSpawnerCoroutine(context) end)
+    object.normalAttackSequence = ActionSequence:new(function(context) object:normalAttackCoroutine(context) end)
 
     table.insert(objects, object)
     return object
@@ -69,12 +64,13 @@ function LostMekkaBoss:update(dt)
         self.bossPhase = currPhase
         self:onBossPhaseStart()
     end
-    self.isShielded = self.forceShield or self.wavesToSpawn > 0 or self.minionCount >= 5
     self.timers:update(dt)
 
     if not player or not player.alive then return end
 
+    self.shieldSequence:update(dt)
     self.spawnSequence:update(dt)
+    self.normalAttackSequence:update(dt)
 
     local px, py = player.collider:getPosition()
     local x, y = self.collider:getPosition()
@@ -88,26 +84,20 @@ function LostMekkaBoss:update(dt)
     elseif d > maxDistance then
         self.collider:applyForce(dx / d * moveForce, dy / d * moveForce)
     end
-
-    --if self.canShoot then
-    --    self.canShoot = false
-    --    LostMekkaMinion:new(x + dx / d * 20, y + dy / d * 20)
-    --    --Bullet:new(
-    --    --        self,
-    --    --        player,
-    --    --        400,
-    --    --        3,
-    --    --        1,
-    --    --        5,
-    --    --        0,
-    --    --        nil,
-    --    --        nil,
-    --    --        nil
-    --    --)
-    --end
 end
 
-function LostMekkaBoss:minionSpawnerCoroutine(context, waveCount)
+function LostMekkaBoss:shieldCoroutine(context)
+    while true do
+        -- wait for shield to activate
+        while not self.isShielded do context:delay(0.1) end
+        context:delay(5) -- shield stays on for at least a few seconds before we start to check for deactivation
+        -- wait for conditions to deactivate shield
+        while self.wavesToSpawn > 0 or self.minionCount >= 5 do context:delay(0.1) end
+        self.isShielded = false
+    end
+end
+
+function LostMekkaBoss:minionSpawnerCoroutine(context)
     while true do
         context:delay(1)
         if self.wavesToSpawn > 0 then
@@ -115,6 +105,29 @@ function LostMekkaBoss:minionSpawnerCoroutine(context, waveCount)
             for _ = 1, 10 do
                 self:spawnMinion()
                 context:delay(0.05)
+            end
+        end
+    end
+end
+
+function LostMekkaBoss:normalAttackCoroutine(context)
+    while true do
+        context:delay(0.5 + math.random())
+        if not self.idle and self.wavesToSpawn <= 0 then
+            for _ = 1, self.bossPhase * 5 do
+                Bullet:new(
+                        self,
+                        player,
+                        400,
+                        3,
+                        1,
+                        5,
+                        0,
+                        nil,
+                        nil,
+                        nil
+                )
+                context:delay(0.2)
             end
         end
     end
@@ -134,10 +147,11 @@ function LostMekkaBoss:spawnMinion()
 end
 
 function LostMekkaBoss:onBossPhaseStart()
-    self.forceShield = true
+    self.isShielded = true
+    self.idle = true
     self.timers:setTimer("spawning start", 3, 1, function()
         self.wavesToSpawn = 3 * self.bossPhase
-        self.forceShield = false
+        self.idle = false
     end)
 end
 
