@@ -11,9 +11,10 @@ Hammer = {}
 --- @param customUpdate function(self, dt)
 --- @param customOnHit function(self)
 --- @param customOnEndOfLife function(self)
+--- @param debugColor table { r, g, b }
 function Hammer:new(
         sourceEntity,
-        targetEntity,
+        target,
         velocity,
         maxLifetime,
         damage,
@@ -21,24 +22,44 @@ function Hammer:new(
         linearDamping,
         customUpdate,
         customOnHit,
-        customOnEndOfLife
+        customOnEndOfLife,
+        debugColor
 )
+    if not sourceEntity then error("source entity must be set") end
     local object = {}
     setmetatable(object, self)
     self.__index = self
 
     local sx, sy = sourceEntity.collider:getPosition()
-    local tx, ty = targetEntity.collider:getPosition()
+    local dx, dy, d
     local pvx, pvy = player.collider:getLinearVelocity()
-    local dx, dy = tx + pvx - sx, ty + pvy - sy
-    local d = math.sqrt(dx * dx + dy * dy)
+--[[    if target.collider then]]
+        local tx, ty = target.collider:getPosition()
+        local dx, dy = tx + pvx - sx, ty + pvy - sy
+        local d = math.sqrt(dx * dx + dy * dy)
+--[[    elseif type(target.angle) == "number" then
+        dx = math.cos(target.angle)
+        dy = math.sin(target.angle)
+        d = 1
+    else
+        local tx, ty = target.x, target.y
+        dx, dy = tx - sx, ty - sy
+        d = math.sqrt(dx * dx + dy * dy)
+    end
+    if d == 0 then
+        print("warning: bullet created with source position == target position. falling back to 0 degree shooting angle")
+        d = 1
+        dx = 1
+        dy = 0
+    end]]
+    local sourceR = sourceEntity.radius or 5
 
     object.type = "bullet"
     object.belongsToPlayer = sourceEntity.belongsToPlayer
     object.alive = true
     object.debugColor = { 1, 0.5, 0 }
-    object.sourceEntity = sourceEntity or error("aaa")
-    object.targetEntity = targetEntity
+    object.sourceEntity = sourceEntity
+    object.targetEntity = target
     object.velocity = velocity
     object.maxLifetime = maxLifetime
     object.currLifetime = 0
@@ -48,7 +69,7 @@ function Hammer:new(
     object.customUpdate = customUpdate
     object.customOnHit = customOnHit
     object.customOnEndOfLife = customOnEndOfLife
-    object.collider = world:newCircleCollider(sx, sy, radius) -- TODO: add some distance so not every shot comes from the center
+    object.collider = world:newCircleCollider(sx + dx / d * sourceR, sy + dy / d * sourceR, radius)
     object.collider:setCollisionClass("enemyBullet")
     object.collider:setBullet(true)
     object.collider:setMass(1)
