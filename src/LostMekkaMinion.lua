@@ -3,10 +3,10 @@ require("timers")
 require("Bullet")
 
 LostMekkaMinion = {
-    mass = 2,
+    mass = 1,
     type = "enemy",
     belongsToPlayer = false,
-    maxHp = 5,
+    maxHp = 3,
     alive = true,
     debugColor = { 1, 0.2, 0.2 }
 }
@@ -47,9 +47,9 @@ function LostMekkaMinion:update(dt)
     local f = 1 / self.sizeModifier
     local t = self.moveTime
     local angleNoise = love.math.noise(t * f)
-    local angle = math.atan2(py - sy, px - sx) + ((angleNoise - 0.5) ^ 3) * 130
+    local angle = math.atan2(py - sy, px - sx) + ((angleNoise - 0.5) ^ 3) * 180
     local forceNoise = love.math.noise((t + 5000) * f * 2.5)
-    local force = (forceNoise ^ 2.5) * 12000 + 100
+    local force = (forceNoise ^ 2.5) * 6000 * self.mass + 100
     self.collider:applyForce(math.cos(angle) * force, math.sin(angle) * force)
 
     if self.collider:enter("player") then
