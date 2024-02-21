@@ -109,6 +109,8 @@ function Bullet:update(dt)
 end
 
 function Bullet:destroy()
-    self.collider:destroy()
+    if not self.collider:isDestroyed() then
+        self.collider:destroy()
+    end
     self.alive = false
 end
