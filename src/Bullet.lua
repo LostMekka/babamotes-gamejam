@@ -21,7 +21,8 @@ function Bullet:new(
         linearDamping,
         customUpdate,
         customOnHit,
-        customOnEndOfLife
+        customOnEndOfLife,
+        debugColor
 )
     if not sourceEntity then error("source entity must be set") end
     local object = {}
@@ -43,41 +44,80 @@ function Bullet:new(
         dx = 1
         dy = 0
     end
-    local sourceR = sourceEntity.radius or 5
-
-    object.type = "bullet"
-    object.belongsToPlayer = sourceEntity.belongsToPlayer
-    object.alive = true
-    object.debugColor = { 0.7, 0, 0.5 }
-    object.sourceEntity = sourceEntity
-    object.targetEntity = targetEntity
-    object.velocity = velocity
-    object.maxLifetime = maxLifetime
-    object.currLifetime = 0
-    object.damage = damage
-    object.radius = radius
-    object.linearDamping = linearDamping
-    object.customUpdate = customUpdate
-    object.customOnHit = customOnHit
-    object.customOnEndOfLife = customOnEndOfLife
-    object.collider = world:newCircleCollider(sx + dx / d * sourceR, sy + dy / d * sourceR, radius)
-    object.collider:setBullet(true)
-    object.collider:setMass(1)
-    object.collider:setRestitution(0.5)
-    object.collider:setLinearDamping(linearDamping or 0)
-    object.collider:setLinearVelocity(dx / d * velocity, dy / d * velocity)
-    object.collider:setObject(object)
-
-    if object.belongsToPlayer then
-        object.collider:setCollisionClass("playerBullet")
-        object.targetCollisionClass = "enemy"
-    else
-        object.collider:setCollisionClass("enemyBullet")
-        object.targetCollisionClass = "player"
-    end
-
-    table.insert(objects, object)
+    
+    object = Bullet:new_dir(
+        sourceEntity,
+        (dx / d * velocity),
+        (dy / d * velocity),
+        maxLifetime,
+        damage,
+        radius,
+        linearDamping,
+        customUpdate,
+        customOnHit,
+        customOnEndOfLife,
+        debugColor
+)
     return object
+end
+
+function Bullet:new_dir(
+    sourceEntity,
+    velocityX,
+    velocityY,
+    maxLifetime,
+    damage,
+    radius,
+    linearDamping,
+    customUpdate,
+    customOnHit,
+    customOnEndOfLife,
+    debugColor
+)
+if not sourceEntity then error("source entity must be set") end
+local object = {}
+setmetatable(object, self)
+self.__index = self
+
+local velocity = math.sqrt(math.pow(velocityX, 2) + math.pow(velocityY, 2))
+
+local sx, sy = sourceEntity.collider:getPosition()
+local sourceR = sourceEntity.radius or 5
+
+object.type = "bullet"
+object.belongsToPlayer = sourceEntity.belongsToPlayer
+object.alive = true
+object.debugColor = { 0.7, 0, 0.5 }
+if debugColor ~= nil then object.debugColor = debugColor end
+object.sourceEntity = sourceEntity
+object.targetEntity = targetEntity
+object.velocity = velocity
+object.maxLifetime = maxLifetime
+object.currLifetime = 0
+object.damage = damage
+object.radius = radius
+object.linearDamping = linearDamping
+object.customUpdate = customUpdate
+object.customOnHit = customOnHit
+object.customOnEndOfLife = customOnEndOfLife
+object.collider = world:newCircleCollider(sx + velocityX / velocity * sourceR, sy + velocityY / velocity * sourceR, radius)
+object.collider:setBullet(true)
+object.collider:setMass(1)
+object.collider:setRestitution(0.5)
+object.collider:setLinearDamping(linearDamping or 0)
+object.collider:setLinearVelocity(velocityX, velocityY)
+object.collider:setObject(object)
+
+if object.belongsToPlayer then
+    object.collider:setCollisionClass("playerBullet")
+    object.targetCollisionClass = "enemy"
+else
+    object.collider:setCollisionClass("enemyBullet")
+    object.targetCollisionClass = "player"
+end
+
+table.insert(objects, object)
+return object
 end
 
 function Bullet:update(dt)
