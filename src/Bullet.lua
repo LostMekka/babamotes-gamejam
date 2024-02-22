@@ -64,7 +64,7 @@ function Bullet:new(
     object.currLifetime = 0
     object.damage = damage
     object.radius = radius
-    object.linearDamping = linearDamping
+    object.linearDamping = linearDamping or 0
     object.customUpdate = customUpdate
     object.customOnHit = customOnHit
     object.customOnEndOfLife = customOnEndOfLife
