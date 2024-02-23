@@ -1,4 +1,5 @@
 require("entityHelpers")
+require("sounds")
 require("timers")
 require("Bullet")
 
@@ -9,6 +10,11 @@ LostMekkaMinion = {
     maxHp = 3,
     alive = true,
     debugColor = { 1, 0.2, 0.2 }
+}
+
+local sounds = {
+    hit = PolyVoiceSound:new("sfx/hit.wav"),
+    death = PolyVoiceSound:new("sfx/bat.wav", 0.5),
 }
 
 local maxMoveTime = 10000
@@ -31,7 +37,15 @@ function LostMekkaMinion:new(startX, startY, onDeath)
     object.collider:setMass(object.mass)
     object.collider:setObject(object)
 
-    addHpComponentToEntity(object, object.maxHp, nil, onDeath)
+    addHpComponentToEntity(object, object.maxHp,
+            function(self, amount)
+                if self.hp - amount > 0 then sounds.hit:play() end
+            end,
+            function(...)
+                sounds.death:play()
+                onDeath(...)
+            end
+    )
     object.moveTime = random(0, maxMoveTime)
 
     table.insert(objects, object)

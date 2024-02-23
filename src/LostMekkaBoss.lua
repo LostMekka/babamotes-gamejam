@@ -1,3 +1,4 @@
+require("sounds")
 require("entityHelpers")
 require("timers")
 require("ActionSequence")
@@ -13,6 +14,17 @@ LostMekkaBoss = {
     alive = true,
     mass = 20,
     debugColor = { 1, 0, 0 }
+}
+
+local sounds = {
+    shieldUp = PolyVoiceSound:new("sfx/shieldup3.wav"),
+    shieldDown = PolyVoiceSound:new("sfx/shielddown.wav"),
+    shieldHit = PolyVoiceSound:new("sfx/shieldhit.wav", 0.6),
+    hit = PolyVoiceSound:new("sfx/hit.wav"),
+    shot = PolyVoiceSound:new("sfx/shot2.wav"),
+    laser = PolyVoiceSound:new("sfx/explode2.wav"),
+    spawn = PolyVoiceSound:new("sfx/fizz.wav"),
+    bossDead = PolyVoiceSound:new("sfx/bossdead.wav"),
 }
 
 function LostMekkaBoss:new(startX, startY)
@@ -97,6 +109,7 @@ function LostMekkaBoss:shieldCoroutine(context)
     while true do
         -- wait for shield to activate
         while not self.isShielded do context:delay() end
+        sounds.shieldUp:play()
         -- wait for stun to wear off
         while self.isStunned do context:delay() end
         -- shield stays on for at least a few seconds before we start to check for deactivation
@@ -104,6 +117,7 @@ function LostMekkaBoss:shieldCoroutine(context)
         -- wait for conditions to deactivate shield
         while self.wavesToSpawn > 0 or self.minionCount >= 5 do context:delay() end
         self.isShielded = false
+        sounds.shieldDown:play()
     end
 end
 
@@ -112,6 +126,7 @@ function LostMekkaBoss:minionSpawnerCoroutine(context)
         context:delay(1)
         if self.wavesToSpawn > 0 then
             self.wavesToSpawn = self.wavesToSpawn - 1
+            sounds.spawn:play()
             for _ = 1, 10 do
                 self:spawnMinion()
                 context:delay(0.05)
@@ -125,6 +140,7 @@ function LostMekkaBoss:normalAttackCoroutine(context)
         context:delay(0.5 + math.random())
         if not self.isStunned and self.wavesToSpawn <= 0 then
             for _ = 1, self.bossPhase * 5 do
+                sounds.shot:play()
                 Bullet:new(
                         self,
                         player,
@@ -150,6 +166,7 @@ function LostMekkaBoss:zoningAttackCoroutine(context)
             local angleOffset = math.random() * 2 * math.pi
             for burst = 1, burstCount do
                 context:delay(0.8)
+                sounds.laser:play()
                 local burstOffset = (burst % 2) * math.pi / beamCount
                 for _ = 1, bulletCount do
                     context:delay(0.015)
@@ -176,6 +193,7 @@ function LostMekkaBoss:stunnedAttackCoroutine(context)
     while true do
         context:delay(0.15)
         if self.isStunned and self.bossPhase > 1 then
+            sounds.shot:play()
             local beamCount = self.bossPhase * 2 + 1
             local rotationSpeed = 3.5
             local angleOffset = (love.timer.getTime() * rotationSpeed) % (2 * math.pi)
@@ -239,10 +257,14 @@ function LostMekkaBoss:onDamageBeforeHealthCheck(damageAmount)
     if self.isShielded then
         -- negate all damage
         self.hp = self.hp + damageAmount
+        sounds.shieldHit:play()
+    elseif self.hp - damageAmount > 0 then
+        sounds.hit:play()
     end
 end
 
 function LostMekkaBoss:onDeath()
     -- TODO: mark this boss as defeated
     spawnPortalToHubWorld(self.collider:getPosition())
+    sounds.bossDead:play()
 end

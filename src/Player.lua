@@ -1,3 +1,4 @@
+require("sounds")
 require("timers")
 require("Bullet")
 
@@ -8,6 +9,12 @@ playerMovementDamping = 5
 playerShootCooldown = 0.1
 playerShootVelocity = 400
 playerShootDamage = 1
+
+local sounds = {
+    hit = PolyVoiceSound:new("sfx/playerhit.wav"),
+    shoot = PolyVoiceSound:new("sfx/shot1.wav", 0.6),
+    death = PolyVoiceSound:new("sfx/gameover.wav"),
+}
 
 function Player:new(startX, startY)
     local object = {}
@@ -24,7 +31,14 @@ function Player:new(startX, startY)
     object.collider:setLinearDamping(playerMovementDamping)
     object.collider:setObject(object)
 
-    addHpComponentToEntity(object, 100)
+    addHpComponentToEntity(object, 100,
+            function(self, amount)
+                if self.hp - amount > 0 then sounds.hit:play() end
+            end,
+            function()
+                sounds.death:play()
+            end
+    )
     object.timers = TimerArray:new()
     object.canShoot = true
 
@@ -69,5 +83,6 @@ function Player:update(dt)
                 nil,
                 nil
         )
+        sounds.shoot:play()
     end
 end

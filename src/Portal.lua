@@ -1,15 +1,23 @@
 require("TriggerArea")
+require("sounds")
 
 Portal = {}
 setmetatable(Portal, TriggerArea)
 Portal.__index = Portal
+
+local sounds = {
+    teleport = PolyVoiceSound:new("sfx/teleport1.wav"),
+}
 
 function Portal:new(x, y, radius, onEnter, text)
     local object = TriggerArea:new(
             x, y, radius, nil,
             { player },
             nil,
-            onEnter
+            function(...)
+                sounds.teleport:play()
+                onEnter(...)
+            end
     )
     setmetatable(object, self)
 
