@@ -28,19 +28,24 @@ function ActionSequence:new(sequence, onFinish)
     return object
 end
 
+local useXPCallDetailedErrors = true
 function ActionSequence:restart()
     self.context.error = nil
     self.context.errorStackTrace = nil
-    self.co = coroutine.create(function()
-        local status, error = xpcall(
-                function() self.sequence(self.context) end,
-                function(error)
-                    self.context.errorStackTrace = traceback(2, 3)
-                    return error
-                end
-        )
-        if not status then self.context.error = error end
-    end)
+    if useXPCallDetailedErrors then
+        self.co = coroutine.create(function()
+            local status, error = xpcall(
+                    function() self.sequence(self.context) end,
+                    function(error)
+                        self.context.errorStackTrace = traceback(2, 3)
+                        return error
+                    end
+            )
+            if not status then self.context.error = error end
+        end)
+    else
+        self.co = coroutine.create(function() self.sequence(self.context) end)
+    end
 end
 
 function ActionSequence:update(dt)
