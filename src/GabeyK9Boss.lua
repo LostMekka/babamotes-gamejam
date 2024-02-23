@@ -6,12 +6,10 @@ require("math")
 GabeyK9Boss = {
     type = "enemy",
     belongsToPlayer = false,
-    maxHp = 100,
     radius = 15,
     shootInterval = 1.5,
     alive = true,
     mass = 10,
-    debugColor = { 0, 1, 1 }
 }
 
 gk9BulletColors = {{1,0.2,0.2}, {1,0.6,0.2}, {1,1,0.2}, {0.2,1,0.2}, {0.2,1,1}, {0.2,0.2,1}, {0.6,0.2,1}, {1,0.2,0.6}}
@@ -19,7 +17,9 @@ gk9Updates = {
     nil,
     nil,
     nil,
-    nil,
+    function(self, dt)
+        self.radius = self.radius + dt*3
+    end,
     nil,
     nil,
     nil,
@@ -49,8 +49,8 @@ gk9Updates = {
                     dx = 1
                     dy = 0
                 end
-                velocityX = (dx / d * 400)
-                velocityY = (dy / d * 400)
+                velocityX = (dx / d * 250)
+                velocityY = (dy / d * 250)
                 self.collider:setLinearVelocity(velocityX, velocityY)
             end
         end
@@ -67,7 +67,7 @@ gk9OnHits = {
         local minD = 50
         local speed = 17000
         if d < minD then
-            player.collider:applyForce(d / dx * speed, d / dy * speed)
+            player.collider:applyForce(dx / d * speed, dy / d * speed)
         end
     end,
 }
@@ -77,16 +77,19 @@ gk9EOLs = {
     nil,
     nil,
     function(self)
-        if not boss.alive then return end
-
         local x, y = self.collider:getPosition()
-        boss.collider:setPosition(x, y)
+        if self.origin == 0 then
+            GabeyK9Boss:new(x, y, true)
+        else
+            if not boss.alive then return end  
+            boss.collider:setPosition(x, y)
+        end
     end,
     function(self)
         local x, y = self.collider:getPosition()
         local rnd = math.random(1,8)
         for i=1,5 do
-            local vel = 400
+            local vel = 200
             if rnd == 7 then
                 vel = vel * 2
             end
@@ -98,7 +101,7 @@ gk9EOLs = {
             if rnd == 5 or rnd == 6 then
                 maxLife = 0.5
             end
-            Bullet:new(
+            new = Bullet:new(
                     self,
                     { angle = i * math.pi * 0.4 },
                     vel,
@@ -111,11 +114,12 @@ gk9EOLs = {
                     gk9EOLs[rnd],
                     gk9BulletColors[rnd]
             )
+            new.origin = 0
         end
     end,
 }
 
-function GabeyK9Boss:new(startX, startY)
+function GabeyK9Boss:new(startX, startY, isPhantom)
     local object = {}
     setmetatable(object, self)
     self.__index = self
@@ -126,13 +130,34 @@ function GabeyK9Boss:new(startX, startY)
     object.collider:setMass(object.mass)
     object.collider:setObject(object)
 
+    if isPhantom == nil then
+        isPhantom = false
+    end
+    object.isPhantom = isPhantom
+    local hp
+    if isPhantom then
+        object.step = 0
+        object.debugColor = { 0, 1, 1, 0.4 }
+        hp = 10
+    else
+        object.debugColor = { 0, 1, 1, 1 }
+        hp = 100
+    end
+
     addHpComponentToEntity(
             object,
-            object.maxHp,
+            hp,
             nil,
             function(self)
                 -- TODO: mark this boss as defeated
-                spawnPortalToHubWorld(self.collider:getPosition())
+                if not self.isPhantom then
+                    for o,obj in pairs(objects) do
+                        if obj.isPhantom ~= nil and obj.isPhantom then
+                            obj:destroy()
+                        end
+                    end
+                    spawnPortalToHubWorld(self.collider:getPosition())
+                end
             end
     )
 
@@ -164,35 +189,86 @@ function GabeyK9Boss:update(dt)
     end
 
     if self.canShoot then
-        self.canShoot = false
-        local offset = math.random(0,7)
-        for i=1,8 do
-            local j = i + offset
-            local vel = 400
-            if i == 7 then
-                vel = vel * 2
+        if self.isPhantom then
+            if player.alive then
+                if self.step < 1 then
+                    self.canShoot = false
+                    self.step = self.step + 1
+                    local rnd = math.random(1,8)
+                    local vel = 250
+                    if rnd == 7 then
+                        vel = vel * 2
+                    end
+                    local dmg = 1
+                    if rnd == 1 then
+                        dmg = 3
+                    end
+                    if rnd == 3 then
+                        dmg = -2
+                    end
+                    local maxLife = 2
+                    if rnd == 5 or rnd == 6 then
+                        maxLife = 0.5
+                    end
+                    new = Bullet:new(
+                            self,
+                            player,
+                            vel,
+                            maxLife,
+                            dmg,
+                            5,
+                            0,
+                            gk9Updates[rnd],
+                            gk9OnHits[rnd],
+                            gk9EOLs[rnd],
+                            gk9BulletColors[rnd]
+                    )
+                    new.origin = 0
+                else
+                    self:destroy()
+                end
             end
-            local dmg = 1
-            if i == 1 then
-                dmg = 3
+        else
+            self.canShoot = false
+            local offset = math.random(0,7)
+            for i=1,8 do
+                local j = i + offset
+                local vel = 250
+                if i == 7 then
+                    vel = vel * 2
+                end
+                local dmg = 1
+                if i == 1 then
+                    dmg = 3
+                end
+                if i == 3 then
+                    dmg = -2
+                end
+                local maxLife = 2
+                if i == 5 or i == 6 then
+                    maxLife = 0.5
+                end
+                Bullet:new(
+                        self,
+                        { angle = j * math.pi / 4 },
+                        vel,
+                        maxLife,
+                        dmg,
+                        5,
+                        0,
+                        gk9Updates[i],
+                        gk9OnHits[i],
+                        gk9EOLs[i],
+                        gk9BulletColors[i]
+                )
             end
-            local maxLife = 2
-            if i == 5 or i == 6 then
-                maxLife = 0.5
-            end
-            Bullet:new(
-                    self,
-                    { angle = j * math.pi / 4 },
-                    400,
-                    maxLife,
-                    dmg,
-                    5,
-                    0,
-                    gk9Updates[i],
-                    gk9OnHits[i],
-                    gk9EOLs[i],
-                    gk9BulletColors[i]
-            )
         end
     end
+end
+
+function GabeyK9Boss:destroy()
+    if not self.collider:isDestroyed() then
+        self.collider:destroy()
+    end
+    self.alive = false
 end
