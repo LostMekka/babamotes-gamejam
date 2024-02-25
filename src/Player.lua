@@ -113,8 +113,12 @@ function Player:update(dt)
     if not love.mouse.isDown(2) then self.rmbWasUpLastFrame = true end
 end
 
-function Player:onDamageBeforeHealthCheck(amount)
-    if self.hp - amount > 0 then sounds.hit:play() end
+function Player:filterDamage(amount, willDie)
+    return not self.isDashing
+end
+
+function Player:onHit()
+    sounds.hit:play()
 end
 
 function Player:onDeath()

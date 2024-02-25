@@ -248,14 +248,13 @@ function LostMekkaBoss:onBossPhaseStart()
     end)
 end
 
-function LostMekkaBoss:onDamageBeforeHealthCheck(damageAmount)
-    if self.isShielded then
-        -- negate all damage
-        self.hp = self.hp + damageAmount
-        sounds.shieldHit:play()
-    elseif self.hp - damageAmount > 0 then
-        sounds.hit:play()
-    end
+function LostMekkaBoss:filterDamage(damageAmount, willDie)
+    if self.isShielded then sounds.shieldHit:play() end
+    return not self.isShielded
+end
+
+function LostMekkaBoss:onHit()
+    sounds.hit:play()
 end
 
 function LostMekkaBoss:onDeath()

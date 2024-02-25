@@ -65,8 +65,8 @@ function LostMekkaMinion:update(dt)
     end
 end
 
-function LostMekkaMinion:onDamageBeforeHealthCheck(amount)
-    if self.hp - amount > 0 then sounds.hit:play() end
+function LostMekkaMinion:onHit()
+    sounds.hit:play()
 end
 
 function LostMekkaMinion:onDeath(...)

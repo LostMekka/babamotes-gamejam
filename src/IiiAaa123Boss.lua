@@ -228,8 +228,8 @@ function IiiAaa123Boss:onBossPhaseStart()
     if self.bossPhase >= 2 then self:explode(0.8) end
 end
 
-function IiiAaa123Boss:onDamageBeforeHealthCheck(damageAmount)
-    if self.hp - damageAmount > 0 then sounds.hit:play() end
+function IiiAaa123Boss:onHit()
+    sounds.hit:play()
 end
 
 function IiiAaa123Boss:explode(splashDurationMultiplier)
