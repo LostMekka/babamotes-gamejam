@@ -42,7 +42,7 @@ function love.draw()
 
     -- GUI
     screenViewport:use(function()
-        drawBar(15, love.graphics.getPixelHeight() - 25, 200, 15, player.hp / player.maxHp, { 1, 0, 0 })
+        drawBar(15, love.graphics.getPixelHeight() - 65, 200, 15, player.hp / player.maxHp, { 1, 0, 0 })
         if boss and boss.alive and boss.hp then
             local w = love.graphics.getPixelWidth()
             local wr = 0.8
