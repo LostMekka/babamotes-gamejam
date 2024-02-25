@@ -9,6 +9,9 @@ local Viewport = {
     movementEasingSpeed = 10,
     targetScale = 1,
     scaleEasingSpeed = 3,
+    screenShakeAmount = 0,
+    screenShakeOffsetX = 0,
+    screenShakeOffsetY = 0,
 }
 
 function Viewport:new(x, y, scale)
@@ -46,6 +49,9 @@ function Viewport:update(dt)
     self.x = ease(self.x, self.targetX, self.movementEasingSpeed, dt)
     self.y = ease(self.y, self.targetY, self.movementEasingSpeed, dt)
     self.scale = ease(self.scale, self.targetScale, self.scaleEasingSpeed, dt)
+    self.screenShakeAmount = ease(self.screenShakeAmount, 0, 3, dt)
+    self.screenShakeOffsetX = (math.random() * 2 - 1) * self.screenShakeAmount
+    self.screenShakeOffsetY = (math.random() * 2 - 1) * self.screenShakeAmount
 end
 
 function Viewport:use(block)
@@ -53,8 +59,9 @@ function Viewport:use(block)
     local sh = love.graphics.getPixelHeight()
     love.graphics.push()
     if self.fitScreen then
-
+        -- nothing to do
     else
+        love.graphics.translate(self.screenShakeOffsetX, self.screenShakeOffsetY)
         love.graphics.scale(self.scale)
         love.graphics.translate(
                 sw / 2 / self.scale - self.x,
