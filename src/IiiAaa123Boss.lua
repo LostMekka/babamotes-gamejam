@@ -22,6 +22,10 @@ local sounds = {
     bossDead = PolyVoiceSound:new("sfx/bossdead.wav"),
 }
 
+local sprites = {
+    static = loadImage("sprites/iiiaaa123.png")
+}
+
 local function angleOf(x, y, maxRandomOffset)
     return math.atan2(y, x) + maxRandomOffset * (2 * math.random() - 1)
 end
@@ -64,6 +68,18 @@ function IiiAaa123Boss:new(startX, startY)
 end
 
 function IiiAaa123Boss:draw()
+    love.graphics.setColor(1, 1, 1)
+    local sx, sy = self.collider:getPosition()
+    love.graphics.draw(
+            sprites.static,
+            sx,
+            sy,
+            0,
+            self.radius / 256,
+            self.radius / 256,
+            256,
+            256
+    )
 end
 
 function IiiAaa123Boss:update(dt)
