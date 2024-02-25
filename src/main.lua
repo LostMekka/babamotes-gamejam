@@ -42,18 +42,21 @@ function love.draw()
     end)
 end
 
+breakUpdateLoop = false
 function love.update()
     if love.keyboard.isScancodeDown("escape") then
         love.event.quit()
     end
 
     local dt = love.timer.getDelta()
+    breakUpdateLoop = false
     for key, obj in pairs(objects) do
         if obj.alive and obj.update then
             obj:update(dt)
         else
             objects[key] = nil
         end
+        if breakUpdateLoop then break end
     end
 
     world:update(dt)

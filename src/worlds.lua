@@ -20,6 +20,7 @@ local function createNewWorld()
     local wf = require("libs/windfield")
     if world then world:destroy() end
     objects = {}
+    breakUpdateLoop = true
     player = nil -- TODO: preserve player hp when changing worlds
     boss = nil
     customWorldUpdate = nil
