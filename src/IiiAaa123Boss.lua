@@ -51,10 +51,6 @@ function IiiAaa123Boss:new(startX, startY)
 
     object.timers = TimerArray:new()
 
-    object.isStunned = true
-    object.isShielded = true
-    object.minionCount = 0
-    object.wavesToSpawn = 0
     object.bossPhase = 0
     object.actionSequences = {
         ActionSequence:new(function(context) object:lavaAttackCoroutine(context) end),
@@ -68,13 +64,6 @@ function IiiAaa123Boss:new(startX, startY)
 end
 
 function IiiAaa123Boss:draw()
-    if self.isShielded then
-        love.graphics.setColor(0.9, 0.95, 1)
-        local x, y = self.collider:getPosition()
-        for i = 3, 6 do
-            love.graphics.circle("line", x, y, self.radius + i)
-        end
-    end
 end
 
 function IiiAaa123Boss:update(dt)
