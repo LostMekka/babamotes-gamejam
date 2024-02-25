@@ -28,11 +28,10 @@ function ActionSequence:new(sequence, onFinish)
     return object
 end
 
-local useXPCallDetailedErrors = true
 function ActionSequence:restart()
     self.context.error = nil
     self.context.errorStackTrace = nil
-    if useXPCallDetailedErrors then
+    if not isLiveBuild then
         self.co = coroutine.create(function()
             local status, error = xpcall(
                     function() self.sequence(self.context) end,

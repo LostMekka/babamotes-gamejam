@@ -1,5 +1,6 @@
 require "math"
 
+require("_deploy")
 require("images")
 require("worlds")
 require("viewport")
@@ -44,7 +45,7 @@ end
 
 breakUpdateLoop = false
 function love.update()
-    if love.keyboard.isScancodeDown("escape") then
+    if not isLiveBuild and love.keyboard.isScancodeDown("escape") then
         love.event.quit()
     end
 

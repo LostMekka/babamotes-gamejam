@@ -21,6 +21,9 @@ tasks.register<Zip>("dist-love-file") {
     from("$projectDir/src")
     archiveFileName.set("game.love")
     destinationDirectory.set(projectDir.resolve("dist"))
+    doFirst {
+        file("$projectDir/src/_deploy.lua").writeText("isLiveBuild = true\n")
+    }
 }
 
 tasks.register<Exec>("dist-web-create-files") {
@@ -36,4 +39,7 @@ tasks.register<Zip>("dist-web-zip") {
     from("$projectDir/dist/web")
     archiveFileName.set("game-web.zip")
     destinationDirectory.set(projectDir.resolve("dist"))
+    doLast {
+        file("$projectDir/src/_deploy.lua").writeText("isLiveBuild = false\n")
+    }
 }
