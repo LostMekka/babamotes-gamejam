@@ -7,7 +7,7 @@ require("Bullet")
 IiiAaa123Boss = {
     type = "enemy",
     belongsToPlayer = false,
-    maxHp = 400,
+    maxHp = 300,
     radius = 25,
     shootInterval = 0.5,
     alive = true,
