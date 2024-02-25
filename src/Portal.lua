@@ -32,6 +32,7 @@ function Portal:draw()
     if self.text then
         local x, y = self.collider:getPosition()
         love.graphics.setColor(0, 0, 0)
-        love.graphics.print(self.text, x, y)
+        local w = love.graphics.getFont():getWidth(self.text)
+        love.graphics.print(self.text, x - w / 2, y + 5)
     end
 end
