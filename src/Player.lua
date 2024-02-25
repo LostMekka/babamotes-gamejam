@@ -22,6 +22,28 @@ local sounds = {
     death = PolyVoiceSound:new("sfx/gameover.wav"),
 }
 
+local sprites = {
+    walkRight = {
+        loadImage("sprites/baba1.png"),
+        loadImage("sprites/baba2.png"),
+        loadImage("sprites/baba3.png"),
+        loadImage("sprites/baba4.png"),
+    },
+    walkUp = {
+        loadImage("sprites/baba5.png"),
+        loadImage("sprites/baba6.png"),
+        loadImage("sprites/baba7.png"),
+        loadImage("sprites/baba8.png"),
+    },
+    walkDown = {
+        loadImage("sprites/baba9.png"),
+        loadImage("sprites/baba10.png"),
+        loadImage("sprites/baba11.png"),
+        loadImage("sprites/baba12.png"),
+    },
+    dash = loadImage("sprites/baba13.png"),
+}
+
 function Player:new(startX, startY)
     local object = {}
     setmetatable(object, self)
@@ -44,12 +66,67 @@ function Player:new(startX, startY)
     object.canShoot = true
     object.canDash = true
     object.isDashing = false
+    object.walkAnimationTime = 0
+    object.walkAnimationSpeed = 0.05
+    object.drawScale = 0.12
 
     table.insert(objects, object)
     return object
 end
 
+function Player:draw()
+    love.graphics.setColor(1, 1, 1)
+    local sx, sy = self.collider:getPosition()
+    local vx, vy = self.collider:getLinearVelocity()
+    if self.isDashing then
+        local angle = math.atan2(vy, vx)
+        local hFlipScale = 1
+        if vx < 0 then
+            hFlipScale = -1
+            angle = angle + math.pi
+        end
+        love.graphics.draw(
+                sprites.dash,
+                sx,
+                sy,
+                angle,
+                self.drawScale * hFlipScale,
+                self.drawScale,
+                256,
+                256
+        )
+    else
+        local d = math.sqrt(vx * vx + vy * vy)
+        local animationIndex = math.floor(self.walkAnimationTime) + 1
+        local animation
+        local hFlipScale = 1
+        if math.abs(vx) >= math.abs(vy) or d < 10 then
+            animation = sprites.walkRight
+            if vx < 0 then hFlipScale = -1 end
+        else
+            if vy > 0 then
+                animation = sprites.walkDown
+            else
+                animation = sprites.walkUp
+            end
+        end
+        love.graphics.draw(
+                animation[animationIndex],
+                sx,
+                sy,
+                0,
+                self.drawScale * hFlipScale,
+                self.drawScale,
+                256,
+                256
+        )
+    end
+end
+
 function Player:update(dt)
+    local vx, vy = self.collider:getLinearVelocity()
+    local dv = math.sqrt(vx * vx + vy * vy)
+    self.walkAnimationTime = (self.walkAnimationTime + self.walkAnimationSpeed * dv * dt) % 4
     self.energy = self.energy + playerEnergyRegen * dt
     if self.energy > self.maxEnergy then self.energy = self.maxEnergy end
     self.timers:update(dt)
