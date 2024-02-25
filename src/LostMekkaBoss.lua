@@ -16,6 +16,10 @@ LostMekkaBoss = {
     debugColor = { 1, 0, 0 }
 }
 
+local sprites = {
+    static = loadImage("sprites/lostmekka.png")
+}
+
 local sounds = {
     shieldUp = PolyVoiceSound:new("sfx/shieldup3.wav"),
     shieldDown = PolyVoiceSound:new("sfx/shielddown.wav"),
@@ -40,6 +44,7 @@ function LostMekkaBoss:new(startX, startY)
 
     addHpComponentToEntity(object, object.maxHp)
 
+    object.drawScale = object.radius / 64
     object.timers = TimerArray:new()
 
     object.isStunned = true
@@ -61,6 +66,18 @@ function LostMekkaBoss:new(startX, startY)
 end
 
 function LostMekkaBoss:draw()
+    love.graphics.setColor(1, 1, 1)
+    local sx, sy = self.collider:getPosition()
+    love.graphics.draw(
+            sprites.static,
+            sx,
+            sy,
+            0,
+            self.drawScale,
+            self.drawScale,
+            64,
+            64
+    )
     if self.isShielded then
         love.graphics.setColor(0.9, 0.95, 1)
         local x, y = self.collider:getPosition()
