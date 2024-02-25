@@ -1,7 +1,7 @@
 Bullet = {}
 
 
---- @param sourceEntity table entity
+--- @param source table entity or { x: number, y: number, radius: number?, belongsToPlayer: boolean }
 --- @param target table entity or { x: number, y: number } or { angle: number (in radians) }
 --- @param velocity number
 --- @param maxLifetime number
@@ -13,7 +13,7 @@ Bullet = {}
 --- @param customOnEndOfLife function(self)
 --- @param debugColor table { r, g, b }
 function Bullet:new(
-        sourceEntity,
+        source,
         target,
         velocity,
         maxLifetime,
@@ -25,12 +25,18 @@ function Bullet:new(
         customOnEndOfLife,
         debugColor
 )
-    if not sourceEntity then error("source entity must be set") end
+    if not source then error("source must be set") end
+    if not target then error("target must be set") end
     local object = {}
     setmetatable(object, self)
     self.__index = self
 
-    local sx, sy = sourceEntity.collider:getPosition()
+    local sx, sy
+    if source.collider then
+        sx, sy = source.collider:getPosition()
+    else
+        sx, sy = source.x, source.y
+    end
     local dx, dy, d
     if target.collider then
         local tx, ty = target.collider:getPosition()
@@ -51,13 +57,13 @@ function Bullet:new(
         dx = 1
         dy = 0
     end
-    local sourceR = sourceEntity.radius or 5
+    local sourceR = source.radius or 5
 
     object.type = "bullet"
-    object.belongsToPlayer = sourceEntity.belongsToPlayer
+    object.belongsToPlayer = source.belongsToPlayer
     object.alive = true
     object.debugColor = debugColor or { 0.7, 0, 0.5 }
-    object.sourceEntity = sourceEntity
+    object.sourceEntity = source
     object.targetEntity = target
     object.velocity = velocity
     object.maxLifetime = maxLifetime
