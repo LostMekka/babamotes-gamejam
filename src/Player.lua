@@ -4,11 +4,17 @@ require("Bullet")
 
 Player = {}
 
-playerMovementForce = 1500
+playerMovementForce = 1100
 playerMovementDamping = 5
 playerShootCooldown = 0.1
 playerShootVelocity = 400
 playerShootDamage = 1
+playerEnergyRegen = 30
+playerShootCost = 3.2
+playerDashCost = 40
+playerDashCooldown = 0.2
+playerDashDuration = 0.22
+playerDashImpulse = 1200
 
 local sounds = {
     hit = PolyVoiceSound:new("sfx/playerhit.wav"),
@@ -32,14 +38,20 @@ function Player:new(startX, startY)
     object.collider:setObject(object)
 
     addHpComponentToEntity(object, 100)
+    object.maxEnergy = 100
+    object.energy = object.maxEnergy
     object.timers = TimerArray:new()
     object.canShoot = true
+    object.canDash = true
+    object.isDashing = false
 
     table.insert(objects, object)
     return object
 end
 
 function Player:update(dt)
+    self.energy = self.energy + playerEnergyRegen * dt
+    if self.energy > self.maxEnergy then self.energy = self.maxEnergy end
     self.timers:update(dt)
 
     local moveX, moveY = 0, 0
@@ -56,11 +68,12 @@ function Player:update(dt)
         moveX = moveX + 1
     end
     local d = math.sqrt(moveX ^ 2 + moveY ^ 2)
-    if (d > 0) then
+    if (d > 0 and not self.isDashing) then
         self.collider:applyForce(moveX / d * playerMovementForce, moveY / d * playerMovementForce)
     end
 
-    if self.canShoot and love.mouse.isDown(1) then
+    if self.energy >= playerShootCost and self.canShoot and love.mouse.isDown(1) then
+        self.energy = self.energy - playerShootCost
         self.canShoot = false
         self.timers:setTimer("shoot cooldown", playerShootCooldown, 1, function() self.canShoot = true end)
         local mx, my = worldViewport:screenToWorld(love.mouse.getPosition())
@@ -78,6 +91,26 @@ function Player:update(dt)
         )
         sounds.shoot:play()
     end
+
+    if self.energy >= playerDashCost and self.canDash and love.mouse.isDown(2) and self.rmbWasUpLastFrame then
+        self.rmbWasUpLastFrame = false
+        self.energy = self.energy - playerDashCost
+        self.canDash = false
+        self.isDashing = true
+        self.collider:setSensor(true)
+        self.timers:setTimer("dash duration", playerDashDuration, 1, function()
+            self.collider:setSensor(false)
+            self.isDashing = false
+            self.timers:setTimer("dash cooldown", playerDashCooldown, 1, function() self.canDash = true end)
+        end)
+        local mx, my = worldViewport:screenToWorld(love.mouse.getPosition())
+        local sx, sy = self.collider:getPosition()
+        local dx, dy = mx - sx, my - sy
+        local d = math.sqrt(dx * dx + dy * dy)
+        self.collider:applyLinearImpulse(dx / d * playerDashImpulse, dy / d * playerDashImpulse)
+        -- TODO: dash sound
+    end
+    if not love.mouse.isDown(2) then self.rmbWasUpLastFrame = true end
 end
 
 function Player:onDamageBeforeHealthCheck(amount)

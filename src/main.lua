@@ -11,7 +11,9 @@ function love.load()
 end
 
 local function drawBar(x, y, w, h, amount, color)
-    love.graphics.setColor(0,0,0)
+    love.graphics.setColor(0, 0, 0, 0.1)
+    love.graphics.rectangle("fill", x, y, w, h)
+    love.graphics.setColor(0, 0, 0)
     love.graphics.rectangle("line", x, y, w, h)
     love.graphics.setColor(color)
     love.graphics.rectangle("fill", x + 2, y + 2, (w - 4) * amount, h - 4)
@@ -42,9 +44,11 @@ function love.draw()
 
     -- GUI
     screenViewport:use(function()
-        drawBar(15, love.graphics.getPixelHeight() - 65, 200, 15, player.hp / player.maxHp, { 1, 0, 0 })
+        local w = love.graphics.getPixelWidth()
+        local h = love.graphics.getPixelHeight()
+        drawBar(15, h - 87, 200, 15, player.energy / player.maxEnergy, { 0, 0.8, 0 })
+        drawBar(15, h - 65, 200, 15, player.hp / player.maxHp, { 1, 0, 0 })
         if boss and boss.alive and boss.hp then
-            local w = love.graphics.getPixelWidth()
             local wr = 0.8
             drawBar((1 - wr) * w / 2, 25, w * wr, 20, boss.hp / boss.maxHp, { 1, 0, 0 })
         end
