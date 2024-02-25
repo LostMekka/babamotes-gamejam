@@ -33,10 +33,12 @@ function love.draw()
         -- game entities
         for _, obj in pairs(objects) do
             if obj.alive then
-                love.graphics.setColor(obj.debugColor)
-                local x, y = obj.collider:getPosition()
-                local r = obj.radius or 12
-                love.graphics.circle("fill", x, y, r)
+                if obj.debugColor then
+                    love.graphics.setColor(obj.debugColor)
+                    local x, y = obj.collider:getPosition()
+                    local r = obj.radius or 12
+                    love.graphics.circle("fill", x, y, r)
+                end
                 if obj.draw then obj:draw() end
             end
         end
@@ -64,8 +66,8 @@ function love.update()
     local dt = love.timer.getDelta()
     breakUpdateLoop = false
     for key, obj in pairs(objects) do
-        if obj.alive and obj.update then
-            obj:update(dt)
+        if obj.alive then
+            if obj.update then obj:update(dt) end
         else
             objects[key] = nil
         end

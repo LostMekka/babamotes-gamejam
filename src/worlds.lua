@@ -85,6 +85,22 @@ function createPlayer(x, y)
     player = Player:new(x, y)
 end
 
+function createText(x, y, text, drawScale)
+    local object = {}
+
+    object.type = "environment"
+    object.alive = true
+    object.text = text
+    object.drawScale = drawScale or 1
+    function object:draw()
+        local w = love.graphics.getFont():getWidth(self.text)
+        love.graphics.print(self.text, x - w / 2, y)
+    end
+
+    table.insert(objects, object)
+    return object
+end
+
 function createHubWorld()
     createNewWorld()
     createPlayer()
@@ -109,6 +125,15 @@ function createHubWorld()
             createLostMekkaBossArenaWorld,
             "LostMekka"
     )
+
+    local textY = -portalDistance * 1.8
+    createText(0, textY, "DEFEAT ALL THE BOSSES!")
+    textY = textY + 15
+    createText(0, textY, "ASDW or arrow keys - move around")
+    textY = textY + 15
+    createText(0, textY, "LMB - shoot")
+    textY = textY + 15
+    createText(0, textY, "RMB - dash")
 
     Portal:new(
             0, portalDistance * 1.3, portalSize,
