@@ -7,6 +7,7 @@ require("Player")
 require("LostMekkaBoss")
 require("someone1065Boss")
 require("GabeyK9Boss")
+require("IiiAaa123Boss")
 
 objects = {}
 world = nil
@@ -141,7 +142,9 @@ function createGabeyK9BossArenaWorld()
 end
 
 function createIiiAaa123BossArenaWorld()
-    -- TODO
+    createNewWorld()
+    createPlayer()
+    boss = IiiAaa123Boss:new(0, 250)
 end
 
 function spawnPortalToHubWorld(x, y)
