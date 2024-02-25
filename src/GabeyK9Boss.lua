@@ -16,6 +16,10 @@ local sounds = {
     bossDead = PolyVoiceSound:new("sfx/bossdead.wav"),
 }
 
+local sprites = {
+    static = loadImage("sprites/gabey9k.png")
+}
+
 gk9BulletColors = {{1,0.2,0.2}, {1,0.6,0.2}, {1,1,0.2}, {0.2,1,0.2}, {0.2,1,1}, {0.2,0.2,1}, {0.6,0.2,1}, {1,0.2,0.6}}
 gk9Updates = {
     nil,
@@ -161,6 +165,25 @@ function GabeyK9Boss:new(startX, startY, isPhantom)
 
     table.insert(objects, object)
     return object
+end
+
+function GabeyK9Boss:draw()
+    if self.isPhantom then
+        love.graphics.setColor(1, 1, 1, 0.5)
+    else
+        love.graphics.setColor(1, 1, 1)
+    end
+    local sx, sy = self.collider:getPosition()
+    love.graphics.draw(
+            sprites.static,
+            sx,
+            sy,
+            0,
+            self.radius / 128,
+            self.radius / 128,
+            128,
+            128
+    )
 end
 
 function GabeyK9Boss:update(dt)
