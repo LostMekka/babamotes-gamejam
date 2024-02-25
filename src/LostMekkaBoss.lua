@@ -173,7 +173,7 @@ function LostMekkaBoss:zoningAttackCoroutine(context)
             self.doesZoningAttack = true
             local beamCount = (self.bossPhase - 1) * 2 + 1
             local burstCount = (self.bossPhase - 1) * 2 + 3
-            local bulletCount = 18
+            local bulletCount = 21
             local angleOffset = math.random() * 2 * math.pi
             for burst = 1, burstCount do
                 context:delay(0.8)
@@ -216,7 +216,7 @@ function LostMekkaBoss:stunnedAttackCoroutine(context)
                         100,
                         10,
                         3,
-                        5,
+                        7,
                         -0.25
                 )
             end
