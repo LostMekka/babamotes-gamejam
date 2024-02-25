@@ -87,7 +87,7 @@ function IiiAaa123Boss:update(dt)
         local d = math.sqrt(dx * dx + dy * dy)
         local minDistance = 150
         local maxDistance = 350
-        local moveForce = 500 * self.mass
+        local moveForce = 150 * self.mass
         if d < minDistance then
             self.collider:applyForce(dx / d * -moveForce, dy / d * -moveForce)
         elseif d > maxDistance then
