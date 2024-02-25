@@ -44,7 +44,6 @@ function LostMekkaBoss:new(startX, startY)
 
     addHpComponentToEntity(object, object.maxHp)
 
-    object.drawScale = object.radius / 64
     object.timers = TimerArray:new()
 
     object.isStunned = true
@@ -73,8 +72,8 @@ function LostMekkaBoss:draw()
             sx,
             sy,
             0,
-            self.drawScale,
-            self.drawScale,
+            self.radius / 64,
+            self.radius / 64,
             64,
             64
     )
