@@ -158,7 +158,7 @@ function Player:update(dt)
                 self,
                 { x = mx, y = my },
                 playerShootVelocity,
-                0.85,
+                0.9,
                 playerShootDamage,
                 5,
                 0,
