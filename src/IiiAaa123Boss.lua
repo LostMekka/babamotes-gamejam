@@ -119,7 +119,7 @@ function IiiAaa123Boss:createLavaArea(x, y, splashSize, splashDuration)
             x, y, splashSize or 30, splashDuration or 10,
             { player },
             function(_, dt)
-                player:damage(dt * dotAmount)
+                player:damage(dt * dotAmount, true)
             end,
             nil,
             nil,

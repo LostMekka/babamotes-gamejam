@@ -53,7 +53,7 @@ function createTestWorld()
             200, 200, 30, nil,
             { player },
             function(_, dt)
-                player:damage(dt * 10)
+                player:damage(dt * 10, true)
             end
     )
 

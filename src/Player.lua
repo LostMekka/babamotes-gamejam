@@ -5,6 +5,7 @@ require("Bullet")
 Player = {}
 
 playerMovementForce = 1100
+playerIFrameDuration = 0.5
 playerMovementDamping = 5
 playerShootCooldown = 0.1
 playerShootVelocity = 400
@@ -66,6 +67,7 @@ function Player:new(startX, startY)
     object.canShoot = true
     object.canDash = true
     object.isDashing = false
+    object.hasIFrame = false
     object.walkAnimationTime = 0
     object.walkAnimationSpeed = 0.05
     object.drawScale = 0.12
@@ -190,11 +192,15 @@ function Player:update(dt)
     if not love.mouse.isDown(2) then self.rmbWasUpLastFrame = true end
 end
 
-function Player:filterDamage(amount, willDie)
-    return not self.isDashing
+function Player:filterDamage(amount, willDie, isDoT)
+    return not self.isDashing and (isDoT or not self.hasIFrame)
 end
 
-function Player:onHit()
+function Player:onHit(amount, isDoT)
+    if not isDoT then
+        self.hasIFrame = true
+        self.timers:setTimer("iframe", playerIFrameDuration, 1, function() self.hasIFrame = false end)
+    end
     sounds.hit:play()
 end
 

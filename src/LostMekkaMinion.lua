@@ -90,7 +90,7 @@ function LostMekkaMinion:update(dt)
 
     if self.collider:enter("player") then
         local data = self.collider:getEnterCollisionData("player")
-        data.collider:getObject():damage(dt * 100)
+        data.collider:getObject():damage(dt * 100, true)
     end
 end
 
