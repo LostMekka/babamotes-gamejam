@@ -18,7 +18,7 @@ playerDashImpulse = 1200
 
 local sounds = {
     hit = PolyVoiceSound:new("sfx/playerhit.wav"),
-    shoot = PolyVoiceSound:new("sfx/shot1.wav", 0.45),
+    shoot = PolyVoiceSound:new("sfx/shot1_lowpass.wav", 0.45),
     death = PolyVoiceSound:new("sfx/gameover.wav"),
 }
 
