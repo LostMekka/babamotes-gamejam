@@ -15,6 +15,10 @@ local sounds = {
     bossDead = PolyVoiceSound:new("sfx/bossdead.wav"),
 }
 
+local sprites = {
+    static = loadImage("sprites/someone1065.png")
+}
+
 function someone1065Boss:new(startX, startY)
     local object = {}
     setmetatable(object, self)
@@ -30,6 +34,21 @@ function someone1065Boss:new(startX, startY)
 
     table.insert(objects, object)
     return object
+end
+
+function someone1065Boss:draw()
+    love.graphics.setColor(1, 1, 1)
+    local sx, sy = self.collider:getPosition()
+    love.graphics.draw(
+            sprites.static,
+            sx,
+            sy,
+            0,
+            self.radius / 24,
+            self.radius / 24,
+            24,
+            24
+    )
 end
 
 function someone1065Boss:update(dt)
