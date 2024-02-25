@@ -31,14 +31,7 @@ function Player:new(startX, startY)
     object.collider:setLinearDamping(playerMovementDamping)
     object.collider:setObject(object)
 
-    addHpComponentToEntity(object, 100,
-            function(self, amount)
-                if self.hp - amount > 0 then sounds.hit:play() end
-            end,
-            function()
-                sounds.death:play()
-            end
-    )
+    addHpComponentToEntity(object, 100)
     object.timers = TimerArray:new()
     object.canShoot = true
 
@@ -85,4 +78,12 @@ function Player:update(dt)
         )
         sounds.shoot:play()
     end
+end
+
+function Player:onDamageBeforeHealthCheck(amount)
+    if self.hp - amount > 0 then sounds.hit:play() end
+end
+
+function Player:onDeath()
+    sounds.death:play()
 end

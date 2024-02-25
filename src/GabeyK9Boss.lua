@@ -12,6 +12,10 @@ GabeyK9Boss = {
     mass = 10,
 }
 
+local sounds = {
+    bossDead = PolyVoiceSound:new("sfx/bossdead.wav"),
+}
+
 gk9BulletColors = {{1,0.2,0.2}, {1,0.6,0.2}, {1,1,0.2}, {0.2,1,0.2}, {0.2,1,1}, {0.2,0.2,1}, {0.6,0.2,1}, {1,0.2,0.6}}
 gk9Updates = {
     nil,
@@ -81,7 +85,7 @@ gk9EOLs = {
         if self.origin == 0 then
             GabeyK9Boss:new(x, y, true)
         else
-            if not boss.alive then return end  
+            if not boss.alive then return end
             boss.collider:setPosition(x, y)
         end
     end,
@@ -144,22 +148,7 @@ function GabeyK9Boss:new(startX, startY, isPhantom)
         hp = 100
     end
 
-    addHpComponentToEntity(
-            object,
-            hp,
-            nil,
-            function(self)
-                -- TODO: mark this boss as defeated
-                if not self.isPhantom then
-                    for o,obj in pairs(objects) do
-                        if obj.isPhantom ~= nil and obj.isPhantom then
-                            obj:destroy()
-                        end
-                    end
-                    spawnPortalToHubWorld(self.collider:getPosition())
-                end
-            end
-    )
+    addHpComponentToEntity(object, hp)
 
     object.canShoot = false
     object.timers = TimerArray:new()
@@ -271,4 +260,15 @@ function GabeyK9Boss:destroy()
         self.collider:destroy()
     end
     self.alive = false
+end
+
+function GabeyK9Boss:onDeath()
+    if not self.isPhantom then
+        for _, obj in pairs(objects) do
+            if obj.isPhantom then obj:destroy() end
+        end
+        -- TODO: mark this boss as defeated
+        sounds.bossDead:play()
+        spawnPortalToHubWorld(self.collider:getPosition())
+    end
 end

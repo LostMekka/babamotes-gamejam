@@ -11,6 +11,10 @@ someone1065Boss = {
     debugColor = { 0.447, 0.537, 0.855 }
 }
 
+local sounds = {
+    bossDead = PolyVoiceSound:new("sfx/bossdead.wav"),
+}
+
 function someone1065Boss:new(startX, startY)
     local object = {}
     setmetatable(object, self)
@@ -22,15 +26,7 @@ function someone1065Boss:new(startX, startY)
     object.collider:setMass(object.mass)
     object.collider:setObject(object)
 
-    addHpComponentToEntity(
-            object,
-            object.maxHp,
-            nil,
-            function(self)
-                -- TODO: mark this boss as defeated
-                spawnPortalToHubWorld(self.collider:getPosition())
-            end
-    )
+    addHpComponentToEntity(object, object.maxHp)
 
     table.insert(objects, object)
     return object
@@ -63,4 +59,10 @@ function someone1065Boss:update(dt)
                 nil
         )
     end
+end
+
+function someone1065Boss:onDeath()
+    -- TODO: mark this boss as defeated
+    spawnPortalToHubWorld(self.collider:getPosition())
+    sounds.bossDead:play()
 end

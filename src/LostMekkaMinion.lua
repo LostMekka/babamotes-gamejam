@@ -31,21 +31,14 @@ function LostMekkaMinion:new(startX, startY, onDeath)
     object.sizeModifier = random(0.85, 1.2)
     object.frequencyModifier = (object.sizeModifier - 1) * 2 + 1
     object.radius = 13.0 * object.sizeModifier
+    object.onDeathCallback = onDeath
     object.collider = world:newCircleCollider(startX, startY, object.radius)
     object.collider:setCollisionClass("enemy")
     object.collider:setLinearDamping(playerMovementDamping)
     object.collider:setMass(object.mass)
     object.collider:setObject(object)
 
-    addHpComponentToEntity(object, object.maxHp,
-            function(self, amount)
-                if self.hp - amount > 0 then sounds.hit:play() end
-            end,
-            function(...)
-                sounds.death:play()
-                onDeath(...)
-            end
-    )
+    addHpComponentToEntity(object, object.maxHp)
     object.moveTime = random(0, maxMoveTime)
 
     table.insert(objects, object)
@@ -70,4 +63,13 @@ function LostMekkaMinion:update(dt)
         local data = self.collider:getEnterCollisionData("player")
         data.collider:getObject():damage(dt * 100)
     end
+end
+
+function LostMekkaMinion:onDamageBeforeHealthCheck(amount)
+    if self.hp - amount > 0 then sounds.hit:play() end
+end
+
+function LostMekkaMinion:onDeath(...)
+    sounds.death:play()
+    self.onDeathCallback(...)
 end

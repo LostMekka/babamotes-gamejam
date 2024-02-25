@@ -38,12 +38,7 @@ function LostMekkaBoss:new(startX, startY)
     object.collider:setMass(object.mass)
     object.collider:setObject(object)
 
-    addHpComponentToEntity(
-            object,
-            object.maxHp,
-            function(self, amount) self:onDamageBeforeHealthCheck(amount) end,
-            function(self) self:onDeath() end
-    )
+    addHpComponentToEntity(object, object.maxHp)
 
     object.timers = TimerArray:new()
 
