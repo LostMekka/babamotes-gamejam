@@ -101,7 +101,7 @@ function Bullet:update(dt)
         -- i encountered a weird bug where hitObject was nil. this should never happen, dunno where that came from.
         -- anyways, better to check that it exists here...
         if hitObject and hitObject.damage then hitObject:damage(self.damage) end
-        if self.customOnHit then self:customOnHit() end
+        if self.customOnHit then self:customOnHit(hitObject) end
         self:destroy()
         return
     end
