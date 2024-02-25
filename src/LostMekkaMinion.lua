@@ -4,7 +4,7 @@ require("timers")
 require("Bullet")
 
 LostMekkaMinion = {
-    mass = 1,
+    mass = 0.6,
     type = "enemy",
     belongsToPlayer = false,
     maxHp = 3,
