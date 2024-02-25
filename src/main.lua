@@ -10,6 +10,13 @@ function love.load()
     createHubWorld()
 end
 
+local function drawBar(x, y, w, h, amount, color)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", x, y, w, h)
+    love.graphics.setColor(color)
+    love.graphics.rectangle("fill", x + 2, y + 2, (w - 4) * amount, h - 4)
+end
+
 function love.draw()
     -- WORLD
     worldViewport:use(function()
@@ -35,10 +42,11 @@ function love.draw()
 
     -- GUI
     screenViewport:use(function()
-        love.graphics.setColor(0,0,0)
-        love.graphics.print(string.format("player hp: %d", player.hp), 5, 5)
+        drawBar(15, love.graphics.getPixelHeight() - 25, 200, 15, player.hp / player.maxHp, { 1, 0, 0 })
         if boss and boss.alive and boss.hp then
-            love.graphics.print(string.format("boss hp: %d", boss.hp), 5, 20)
+            local w = love.graphics.getPixelWidth()
+            local wr = 0.8
+            drawBar((1 - wr) * w / 2, 25, w * wr, 20, boss.hp / boss.maxHp, { 1, 0, 0 })
         end
     end)
 end
