@@ -5,9 +5,14 @@ require("images")
 require("worlds")
 require("viewport")
 
+globalSoundVolume = 0.5
+
 function love.load()
     love.window.setMode(1024, 768)
     createHubWorld()
+    fightMusic = loadMusic("music/fight.mp3")
+    fightMusic:setVolume(1.5)
+    fightMusic:play()
 end
 
 local function drawBar(x, y, w, h, amount, color)

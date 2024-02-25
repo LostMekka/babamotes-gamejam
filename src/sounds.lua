@@ -14,8 +14,17 @@ end
 
 function PolyVoiceSound:play(volume)
     local sound = self.sources[self.index]
-    sound:setVolume(volume or self.defaultVolume)
+    sound:setVolume((volume or self.defaultVolume) * globalSoundVolume)
     sound:play()
     self.index = self.index + 1
     if self.index > #self.sources then self.index = 1 end
+end
+
+local music = {}
+function loadMusic(path)
+    if not music[path] then
+        music[path] = love.audio.newSource(path, "stream")
+        music[path]:setLooping(true)
+    end
+    return music[path]
 end
