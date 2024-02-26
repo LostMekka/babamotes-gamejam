@@ -84,6 +84,22 @@ function Hammer:new(
 end
 
 function Hammer:update(dt)
+    if self.collider:enter(self.targetCollisionClass) then
+        local collision = self.collider:getEnterCollisionData(self.targetCollisionClass)
+        local hitObject = collision.collider:getObject()
+        if hitObject and hitObject.damage then hitObject:damage(self.damage) end
+        if self.customOnHit then self:customOnHit(hitObject) end
+        return
+    end
+    if self.collider:stay("enemy") then
+        local collision = self.collider:getStayCollisionData("enemy")
+        local hitObject = collision.collider:getObject()
+        if hitObject and hitObject.damage then hitObject:damage(self.damage) end
+        if self.customOnHit then self:customOnHit(hitObject) end
+        self:destroy()
+        return
+    end
+
     self.alive = true
     self.currLifetime = self.currLifetime + dt
     if self.currLifetime >= self.maxLifetime then
