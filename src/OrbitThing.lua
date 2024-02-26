@@ -44,7 +44,7 @@ function Sickle:new(
     object.currLifetime = 0
     object.damage = damage
     object.radius = radius
-    object.collider = world:newCircleCollider(startX, startY, object.radius)
+    object.collider = world:newPolygonCollider({-40,-40,40,-40,40,40,-40,40,0,60,60,60,60,-60,0,-60})
     object.collider:setCollisionClass("enemyBullet")
     object.collider:setType("kinematic")
     object.collider:setObject(object)
@@ -54,6 +54,9 @@ function Sickle:new(
 end
 
 function Sickle:update(dt)
+    if not self.collider then
+        return 0
+    end
     if self.collider:enter(self.targetCollisionClass) then
         local collision = self.collider:getEnterCollisionData(self.targetCollisionClass)
         local hitObject = collision.collider:getObject()
@@ -62,4 +65,6 @@ function Sickle:update(dt)
     end
 
     if self.customUpdate then self:customUpdate(dt) end
+
+    love.graphics.polygon("fill",{-40,-40,40,-40,40,40,-40,40,0,60,60,60,60,-60,0,-60})
 end
